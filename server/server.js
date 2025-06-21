@@ -18,6 +18,8 @@ const generateProductCode = require('./utils/generateProductCode');
 
 const {validateProduct, isAdmin}= require("./middlewares.js");
 
+const userRoutes = require("./routes/userAuth");
+
 const MONGO_URL = process.env.ECOMM_URL;
 main().then(()=>{
     console.log("SUccesful!");
@@ -110,13 +112,14 @@ app.post("/newproduct",isAdmin, validateProduct, async (req, res) => {
   }
 })
 
+app.use("/user", userRoutes);
 
 app.get("/admin/login", (req,res)=>{
   res.render("login.ejs");
 })
 
 // Login POST
-app.post("/admin/login", passport.authenticate("local", {
+app.post("/admin/login", passport.authenticate("admin-local", {
   failureRedirect: "/admin/login",
   failureFlash: true
 }), (req, res) => {

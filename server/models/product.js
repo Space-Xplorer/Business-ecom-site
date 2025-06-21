@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   colors: [String],
   description: { type: String },
+  stock: {type:Number, required:true},
   photos: [String],
   productCode: { type: String, unique: true } // <- New field
 });

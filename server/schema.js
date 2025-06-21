@@ -29,6 +29,7 @@ module.exports.productSchema = Joi.object({
     ),
 
     price: Joi.number().min(0).required(),
+    stock: Joi.number().min(0).required(),
 
     description: Joi.string().allow(''),
 
