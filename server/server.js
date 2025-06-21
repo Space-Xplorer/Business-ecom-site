@@ -169,10 +169,14 @@ app.get("/admin/auth/google/callback",
   }
 );
 
+
+//Dashboard
 app.get("/admin/dashboard",isAdmin,  (req, res) => {
   res.render("adminHome", { user: req.user });
 });
 
+
+//Products
 app.get("/admin/products", isAdmin, async (req, res) => {
   try {
     const products = await Product.find({});
@@ -212,6 +216,35 @@ app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
     res.redirect("/admin/products");
   }
 }); 
+
+
+//Statistics
+app.get("/admin/stats", isAdmin, async (req, res) => {
+  try {
+    const [totalOrders, deliveredOrders, pendingOrders, cancelledOrders, recentOrders] = await Promise.all([
+      Order.countDocuments({}),
+      Order.countDocuments({ orderStatus: "Delivered" }),
+      Order.countDocuments({ orderStatus: "Pending" }),
+      Order.countDocuments({ orderStatus: "Cancelled" }),
+      Order.find().sort({ placedAt: -1 }).limit(5)
+    ]);
+
+    res.render("stats", {
+      totalOrders,
+      deliveredOrders,
+      pendingOrders,
+      cancelledOrders,
+      orders: recentOrders
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Unable to load dashboard stats.");
+    res.redirect("/admin/dashboard");
+  }
+});
+
+
+
 
 
 app.use((req, res, next) => {

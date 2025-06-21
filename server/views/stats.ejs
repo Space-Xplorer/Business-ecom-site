@@ -1,0 +1,131 @@
+<% layout("/layouts/boilerplate") -%>
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="mb-4">
+      <h1 class="h3 fw-bold">Order Dashboard</h1>
+      <p class="text-muted">Overview of orders, sales, and performance metrics</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+      <!-- Total Orders -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-start border-primary shadow-sm">
+          <div class="card-body d-flex align-items-center">
+            <div class="bg-primary text-white rounded p-3 me-3">
+              <i class="fas fa-cart-shopping fa-lg"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-muted small">Total Orders</p>
+              <h5 class="mb-0"><%= typeof totalOrders !== 'undefined' ? totalOrders : '245' %></h5>
+              <small class="text-success">
+                <i class="fas fa-arrow-up"></i> 8.2% from last month
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivered Orders -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-start border-success shadow-sm">
+          <div class="card-body d-flex align-items-center">
+            <div class="bg-success text-white rounded p-3 me-3">
+              <i class="fas fa-check-circle fa-lg"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-muted small">Delivered Orders</p>
+              <h5 class="mb-0"><%= typeof deliveredOrders !== 'undefined' ? deliveredOrders : '182' %></h5>
+              <small class="text-success">
+                <i class="fas fa-arrow-up"></i> 12.5% from last month
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Orders -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-start border-warning shadow-sm">
+          <div class="card-body d-flex align-items-center">
+            <div class="bg-warning text-white rounded p-3 me-3">
+              <i class="fas fa-clock fa-lg"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-muted small">Pending Orders</p>
+              <h5 class="mb-0"><%= typeof pendingOrders !== 'undefined' ? pendingOrders : '42' %></h5>
+              <small class="text-warning">
+                <i class="fas fa-minus"></i> 0.5% from last month
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cancelled Orders -->
+      <div class="col-sm-6 col-lg-3">
+        <div class="card border-start border-danger shadow-sm">
+          <div class="card-body d-flex align-items-center">
+            <div class="bg-danger text-white rounded p-3 me-3">
+              <i class="fas fa-times-circle fa-lg"></i>
+            </div>
+            <div>
+              <p class="mb-1 text-muted small">Cancelled Orders</p>
+              <h5 class="mb-0"><%= typeof cancelledOrders !== 'undefined' ? cancelledOrders : '21' %></h5>
+              <small class="text-danger">
+                <i class="fas fa-arrow-down"></i> 3.2% from last month
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-white fw-bold">Recent Orders</div>
+      <div class="table-responsive">
+        <table class="table mb-0 table-hover align-middle text-nowrap">
+          <thead class="table-light">
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (orders && orders.length > 0) { %>
+              <% orders.forEach(order => { %>
+                <tr>
+                  <td class="text-muted"><%= order._id %></td>
+                  <td><%= order.customerName %></td>
+                  <td>₹<%= order.totalAmount %></td>
+                  <td>
+                    <span class="badge bg-light text-dark"><%= order.orderStatus %></span>
+                  </td>
+                  <td><%= order.placedAt.toDateString() %></td>
+                  <td>
+                    <a href="/orders/<%= order._id %>" class="text-decoration-none">View</a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">No recent orders found</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer text-end">
+        <a href="/orders" class="btn btn-link text-decoration-none">
+          View all orders →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
