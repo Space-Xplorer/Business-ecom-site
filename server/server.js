@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-const express = require('express');
-const path = require('path');
-
-const app = express();
-const PORT = 8080;
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-app.get('/', (req, res) => {
-  res.render('adminHome');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
-=======
 require('dotenv').config()
 const express=require("express");
 const app=express();
@@ -89,7 +68,7 @@ app.listen(port, ()=>{
 
 
 app.get("/", (req,res)=>{
-   res.send("this is home!")
+   res.redirect("/admin/dashboard");
 })
 
 app.get("/newproduct",isAdmin, (req,res)=>{
@@ -191,7 +170,7 @@ app.get("/admin/auth/google/callback",
 );
 
 app.get("/admin/dashboard",isAdmin,  (req, res) => {
-  res.render("dashboard", { user: req.user });
+  res.render("adminHome", { user: req.user });
 });
 
 
@@ -205,4 +184,3 @@ app.use((err,req,res,next)=>{
     res.render("error.ejs", {message});
     // res.status(status).send(message);
 })
->>>>>>> d34afb9437917c030d1548c1ff54d8dc29ded5d8
