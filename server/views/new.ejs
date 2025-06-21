@@ -43,13 +43,13 @@
         </div>
 
         <div class="mb-3">
-          <label for="stock" class="form-label">Stock</label>
-          <input type="number" step="1" class="form-control" id="stock" name="product[stock]" required>
+          <label for="price" class="form-label">Price</label>
+          <input type="number" step="0.01" class="form-control" id="price" name="product[price]" required>
         </div>
 
         <div class="mb-3">
-          <label for="colors" class="form-label">Colors (comma-separated)</label>
-          <input type="text" class="form-control" id="colors" name="product[colors]">
+          <label for="stock" class="form-label">Stock</label>
+          <input type="number" class="form-control" id="stock" name="product[stock]" min="0" required>
         </div>
 
         <div class="mb-3">

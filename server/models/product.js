@@ -11,6 +11,7 @@ const productSchema = new mongoose.Schema({
   description: { type: String },
   stock: {type:Number, required:true},
   photos: [String],
+  stock: { type: Number, required:true},
   productCode: { type: String, unique: true } // <- New field
 });
 

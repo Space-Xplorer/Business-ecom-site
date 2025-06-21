@@ -172,9 +172,82 @@ app.get("/admin/auth/google/callback",
   }
 );
 
+
+//Dashboard
 app.get("/admin/dashboard",isAdmin,  (req, res) => {
   res.render("adminHome", { user: req.user });
 });
+
+
+//Products
+app.get("/admin/products", isAdmin, async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.render("productspage", { products });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Failed to fetch products.");
+    res.redirect("/admin/dashboard");
+  }
+});
+
+app.get("/products/:id", isAdmin, async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      req.flash("error", "Product not found");
+      return res.redirect("/admin/products");
+    }
+    res.render("productdetails.ejs", { product });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      req.flash("error", "Product not found.");
+      return res.redirect("/admin/products");
+    }
+    res.render("editProduct", { product });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Failed to fetch product.");
+    res.redirect("/admin/products");
+  }
+}); 
+
+
+//Statistics
+app.get("/admin/stats", isAdmin, async (req, res) => {
+  try {
+    const [totalOrders, deliveredOrders, pendingOrders, cancelledOrders, recentOrders] = await Promise.all([
+      Order.countDocuments({}),
+      Order.countDocuments({ orderStatus: "Delivered" }),
+      Order.countDocuments({ orderStatus: "Pending" }),
+      Order.countDocuments({ orderStatus: "Cancelled" }),
+      Order.find().sort({ placedAt: -1 }).limit(5)
+    ]);
+
+    res.render("stats", {
+      totalOrders,
+      deliveredOrders,
+      pendingOrders,
+      cancelledOrders,
+      orders: recentOrders
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Unable to load dashboard stats.");
+    res.redirect("/admin/dashboard");
+  }
+});
+
+
+
 
 
 app.use((req, res, next) => {
