@@ -1,20 +1,24 @@
 <% layout("/layouts/boilerplate") -%>
 <body>
-  <h1>Admin Login</h1>
+  <div class="d-flex justify-content-center align-items-center mt-5">
+    <div class="card justify-content-center align-items-center px-5 py-5">
+      <h1>Admin Login</h1>
 
-  <!-- Login Form -->
-  <form action="/admin/login" method="POST">
-    <label for="username">Username:</label><br>
-    <input type="text" name="username" id="username" required><br><br>
+      <!-- Login Form -->
+      <form action="/admin/login" method="POST">
+        <label for="username">Username:</label><br>
+        <input type="text" name="username" id="username" required><br><br>
 
-    <label for="password">Password:</label><br>
-    <input type="password" name="password" id="password" required><br><br>
+        <label for="password">Password:</label><br>
+        <input type="password" name="password" id="password" required><br><br>
 
-    <button class="btn btn-primary " type="submit">Log In</button>
-  </form>
+        <button class="btn btn-primary " type="submit">Log In</button>
+      </form>
 
-  <hr style="margin: 30px 0;">
-
+      <hr/>
+    </div>
+  </div>
+<div>
   <!-- Google SSO Option -->
   <form action="/admin/auth/google" method="GET">
     <button type="submit" class="btn btn-dark btn-outline-danger text-white align-items-center justify-content-center">
@@ -23,5 +27,6 @@
   </form>
 
   <p>Don't have an account? <a href="/admin/signup">Sign up</a></p>
+</div>
 </body>
 </html>
