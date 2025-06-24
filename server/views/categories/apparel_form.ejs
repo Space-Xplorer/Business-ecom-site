@@ -1,0 +1,10 @@
+<h2>Add Apparel Type</h2>
+<form action="/categories/<%= mainCategories[0]._id %>/apparel" method="POST">
+  <select name="mainId" onchange="this.form.action = '/categories/' + this.value + '/apparel'">
+    <% mainCategories.forEach(cat => { %>
+      <option value="<%= cat._id %>"><%= cat.name %></option>
+    <% }) %>
+  </select>
+  <input type="text" name="name" placeholder="Apparel Type Name" required />
+  <button type="submit">Add</button>
+</form>

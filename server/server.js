@@ -19,6 +19,8 @@ const generateProductCode = require('./utils/generateProductCode');
 const {validateProduct, isAdmin}= require("./middlewares.js");
 
 const userRoutes = require("./routes/userAuth");
+const adminRoutes = require("./routes/adminAuth.js")
+const categoryRoutes = require('./routes/category');
 
 const MONGO_URL = process.env.ECOMM_URL;
 main().then(()=>{
@@ -112,84 +114,13 @@ app.post("/newproduct",isAdmin, validateProduct, async (req, res) => {
   }
 })
 
+
+app.use('/', categoryRoutes);
+
 app.use("/user", userRoutes);
 
-app.get("/admin/login", (req,res)=>{
-  res.render("login.ejs");
-})
+app.use("/admin", adminRoutes)
 
-// Login POST
-app.post("/admin/login", passport.authenticate("admin-local", {
-  failureRedirect: "/admin/login",
-  failureFlash: true
-}), (req, res) => {
-  req.flash("success", "Logged in successfully!");
-  res.redirect("/admin/dashboard");
-});
-
-
-app.get("/admin/signup",(req,res)=>{
-  res.render("signup.ejs");
-})
-
-app.post("/admin/signup", async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-    const newAdmin = new Admin({ email, username, role: "admin" });
-    const registeredAdmin = await Admin.register(newAdmin, password);
-    req.login(registeredAdmin, (err) => {
-      if (err) return next(err);
-      req.flash("success", "Welcome Admin!");
-      res.redirect("/admin/dashboard");
-    });
-  } catch (e) {
-    req.flash("error", e.message);
-    res.redirect("/admin/signup");
-  }
-});
-
-// Logout
-app.get("/admin/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) return next(err);
-    req.flash("success", "Logged out.");
-    res.redirect("/admin/login");
-  });
-});
-
-// Google login
-app.get("/admin/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-// Google callback
-app.get("/admin/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/admin/login",
-    failureFlash: true
-  }),
-  (req, res) => {
-    req.flash("success", "Logged in with Google!");
-    res.redirect("/admin/dashboard");
-  }
-);
-
-
-//Dashboard
-app.get("/admin/dashboard",isAdmin,  (req, res) => {
-  res.render("adminHome", { user: req.user });
-});
-
-
-//Products
-app.get("/admin/products", isAdmin, async (req, res) => {
-  try {
-    const products = await Product.find({});
-    res.render("productspage", { products });
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "Failed to fetch products.");
-    res.redirect("/admin/dashboard");
-  }
-});
 
 app.get("/products/:id", isAdmin, async (req, res, next) => {
   const { id } = req.params;
@@ -219,32 +150,6 @@ app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
     res.redirect("/admin/products");
   }
 }); 
-
-
-//Statistics
-app.get("/admin/stats", isAdmin, async (req, res) => {
-  try {
-    const [totalOrders, deliveredOrders, pendingOrders, cancelledOrders, recentOrders] = await Promise.all([
-      Order.countDocuments({}),
-      Order.countDocuments({ orderStatus: "Delivered" }),
-      Order.countDocuments({ orderStatus: "Pending" }),
-      Order.countDocuments({ orderStatus: "Cancelled" }),
-      Order.find().sort({ placedAt: -1 }).limit(5)
-    ]);
-
-    res.render("stats", {
-      totalOrders,
-      deliveredOrders,
-      pendingOrders,
-      cancelledOrders,
-      orders: recentOrders
-    });
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "Unable to load dashboard stats.");
-    res.redirect("/admin/dashboard");
-  }
-});
 
 
 
