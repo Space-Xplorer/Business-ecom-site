@@ -1,0 +1,14 @@
+<h2>
+  Products in <%= subcategory.name %>
+  (<%= subcategory.apparelType.name %> - <%= subcategory.apparelType.mainCategory.name %>)
+</h2>
+
+<a href="/subcategory/<%= subcategory._id %>/product/new">
+  <button>Add New Product</button>
+</a>
+
+<ul>
+  <% products.forEach(p => { %>
+    <li><%= p.name %> - ₹<%= p.price %></li>
+  <% }) %>
+</ul>

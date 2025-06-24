@@ -1,0 +1,12 @@
+<h2>Add Product to <%= subcategory.name %> (<%= subcategory.apparelType.name %> > <%= subcategory.apparelType.mainCategory.name %>)</h2>
+
+<form action="/subcategory/<%= subcategory._id %>/product" method="POST">
+  <input type="text" name="name" placeholder="Product Name" required><br>
+  <input type="number" name="price" placeholder="Price" required><br>
+  <input type="number" name="stock" placeholder="Stock" required><br>
+  <input type="text" name="sizesAvailable" placeholder="Sizes (comma-separated)"><br>
+  <input type="text" name="colors" placeholder="Colors (comma-separated)"><br>
+  <textarea name="description" placeholder="Description"></textarea><br>
+  <input type="text" name="photos" placeholder="Photo URLs (comma-separated)"><br>
+  <button type="submit">Add Product</button>
+</form>
