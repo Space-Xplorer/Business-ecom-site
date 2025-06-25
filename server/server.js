@@ -24,7 +24,7 @@ const categoryRoutes = require('./routes/category');
 
 const MONGO_URL = process.env.ECOMM_URL;
 main().then(()=>{
-    console.log("SUccesful!");
+    console.log("MongoDB connected successfully");
 }).catch((err)=>
     console.log(err)
 );
@@ -67,7 +67,7 @@ app.use((req, res, next) => {
 
 
 app.listen(port, ()=>{
-    console.log("listening!");
+    console.log(`listening to ${port}`);
 });
 
 
@@ -152,7 +152,47 @@ app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
 }); 
 
 
+<<<<<<< HEAD
+//Statistics
+app.get("/admin/stats", isAdmin, async (req, res) => {
+  try {
+    const [totalOrders, deliveredOrders, pendingOrders, cancelledOrders, recentOrders] = await Promise.all([
+      Order.countDocuments({}),
+      Order.countDocuments({ orderStatus: "Delivered" }),
+      Order.countDocuments({ orderStatus: "Pending" }),
+      Order.countDocuments({ orderStatus: "Cancelled" }),
+      Order.find().sort({ placedAt: -1 }).limit(5)
+    ]);
 
+    res.render("stats", {
+      totalOrders,
+      deliveredOrders,
+      pendingOrders,
+      cancelledOrders,
+      orders: recentOrders
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "Unable to load dashboard stats.");
+    res.redirect("/admin/dashboard");
+  }
+});
+
+
+ //orders
+  app.get("/admin/orders", async (req, res) => {
+    const orders = await Order.find().lean();
+    res.render("orders", { orders });
+  });
+=======
+>>>>>>> 57a31d77d70322f6db200f4350e462c5d570fff6
+
+  app.get("/admin/orders/:id", async (req, res) => {
+    const order = await Order.findById(req.params.id).lean();
+    if (!order) return res.status(404).send("Order not found");
+    res.render("orderdetail", { order });
+  });
+  
 
 
 app.use((req, res, next) => {
