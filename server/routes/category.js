@@ -1,70 +1,59 @@
 const express = require('express');
 const router = express.Router();
-const MainCategory = require('../models/maincategory');
 const ApparelType = require('../models/appareltype');
 const Subcategory = require('../models/subcategory');
 const Product = require('../models/product'); 
-const {validateProduct, isAdmin}= require("../middlewares.js");
+const { validateProduct, isAdmin } = require("../middlewares.js");
 
-// --- FORMS ---
-
-// Add Main Category Form
-router.get('/categories/main/new', isAdmin,(req, res) => {
-  res.render('categories/main_form');
+// --- DISPLAY MAIN CATEGORY SELECTOR ---
+router.get('/categories/all', isAdmin, (req, res) => {
+  const fixedMainCategories = ['Men', 'Women', 'Kids', 'All', 'General'];
+  res.render('categories/index', { fixedMainCategories });
 });
 
-// Add Apparel Type Form
-router.get('/categories/apparel/new',isAdmin, async (req, res) => {
-  const mainCategories = await MainCategory.find({});
-  res.render('categories/apparel_form', { mainCategories });
+// --- DISPLAY SPECIFIC MAIN CATEGORY PAGE ---
+router.get('/categories/:mainName', isAdmin, async (req, res) => {
+  const { mainName } = req.params;
+const capitalized = mainName.charAt(0).toUpperCase() + mainName.slice(1).toLowerCase();
+
+const apparelTypes = await ApparelType.find({ mainCategory: capitalized }).populate('subcategories');
+
+res.render('categories/show', {
+  mainCategoryName: capitalized,
+  apparelTypes
 });
 
-// Add Subcategory Form
-router.get('/categories/subcategory/new',isAdmin, async (req, res) => {
-  const apparelTypes = await ApparelType.find({}).populate('mainCategory');
-  res.render('categories/subcat_form', { apparelTypes });
 });
 
-// --- POST ROUTES ---
-
-// Create Main Category
-router.post('/categories/main',isAdmin, async (req, res) => {
+// --- CREATE APPAREL TYPE UNDER MAIN CATEGORY ---
+// Create Apparel Type (for fixed main categories)
+router.post('/categories/:mainName/apparel', isAdmin, async (req, res) => {
   try {
     const { name } = req.body;
-    const existing = await MainCategory.findOne({ name });
-    if (existing) return res.status(400).send('Main category already exists');
+    const { mainName } = req.params;
 
-    const mainCat = new MainCategory({ name });
-    await mainCat.save();
-    res.redirect('/categories/all');
+    // Optional: Validate allowed main categories
+    const allowed = ['men', 'women', 'kids'];
+    if (!allowed.includes(mainName.toLowerCase())) {
+      return res.status(400).send("Invalid main category");
+    }
+
+    const newApparel = new ApparelType({
+      name,
+      mainCategory: mainName.charAt(0).toUpperCase() + mainName.slice(1) // format as 'Men'
+    });
+
+    await newApparel.save();
+    res.redirect(`/categories/${mainName}`);
   } catch (err) {
-    res.status(500).send('Error creating main category');
+    console.error(err);
+    res.status(500).send("Error creating apparel type");
   }
 });
 
-// Create Apparel Type
-router.post('/categories/:mainId/apparel', isAdmin, async (req, res) => {
-  try {
-    const { name } = req.body;
-    const { mainId } = req.params;
 
-    const mainCategory = await MainCategory.findById(mainId);
-    if (!mainCategory) return res.status(404).send('Main category not found');
-
-    const apparel = new ApparelType({ name, mainCategory: mainId });
-    await apparel.save();
-
-    mainCategory.apparelTypes.push(apparel._id);
-    await mainCategory.save();
-
-    res.redirect('/categories/all');
-  } catch (err) {
-    res.status(500).send('Error creating apparel type');
-  }
-});
-
-// Create Subcategory
-router.post('/categories/apparel/:apparelId/subcategory',isAdmin, async (req, res) => {
+// --- CREATE SUBCATEGORY UNDER APPAREL TYPE ---
+router.post('/categories/apparel/:apparelId/subcategory', isAdmin, async (req, res) => {
   try {
     const { name } = req.body;
     const { apparelId } = req.params;
@@ -84,72 +73,60 @@ router.post('/categories/apparel/:apparelId/subcategory',isAdmin, async (req, re
   }
 });
 
-// --- DISPLAY ROUTES ---
+// --- PRODUCTS ---
 
-// All Categories (Nested)
-router.get('/categories/all',isAdmin, async (req, res) => {
-  const categories = await MainCategory.find({})
-    .populate({
-      path: 'apparelTypes',
-      populate: { path: 'subcategories' }
-    });
-  res.render('categories/all', { categories });
-});
-
-// All Products
+// View all products (if needed)
 router.get('/products', async (req, res) => {
   const products = await Product.find({});
   res.render('products/all', { products });
 });
 
-// Products by Subcategory
-router.get('/subcategory/:subcatId/products', isAdmin,async (req, res) => {
+// View products by subcategory
+router.get('/subcategory/:subcatId/products', isAdmin, async (req, res) => {
   const subcatId = req.params.subcatId;
+
   const subcategory = await Subcategory.findById(subcatId).populate({
     path: 'apparelType',
     populate: { path: 'mainCategory' }
   });
 
   const products = await Product.find({ subcategories: subcategory.name });
+
   res.render('categories/subcat_products', { subcategory, products });
 });
 
-// GET /subcategory/:subcatId/product/new
-router.get('/subcategory/:subcatId/product/new',isAdmin, async (req, res) => {
-  const subcategory = await Subcategory.findById(req.params.subcatId)
-    .populate({
-      path: 'apparelType',
-      populate: { path: 'mainCategory' }
-    });
+// New product form under subcategory
+router.get('/subcategory/:subcatId/product/new', isAdmin, async (req, res) => {
+  const subcategory = await Subcategory.findById(req.params.subcatId).populate({
+    path: 'apparelType',
+    populate: { path: 'mainCategory' }
+  });
 
   if (!subcategory) return res.status(404).send('Subcategory not found');
   res.render('products/new', { subcategory });
 });
 
-
-// POST /subcategory/:subcatId/product
-router.post('/subcategory/:subcatId/product',isAdmin,validateProduct, async (req, res) => {
+router.post('/subcategory/:subcatId/product', isAdmin, validateProduct, async (req, res) => {
   try {
-    const subcategory = await Subcategory.findById(req.params.subcatId)
-      .populate({
-        path: 'apparelType',
-        populate: { path: 'mainCategory' }
-      });
+    const subcategory = await Subcategory.findById(req.params.subcatId).populate('apparelType');
 
     if (!subcategory) return res.status(404).send('Subcategory not found');
 
     const { name, price, stock, sizesAvailable, colors, description, photos } = req.body;
 
-    // Auto-generate product code (e.g., MEN-TSHIRT-GRAPHIC-001)
-    const productCode = `${subcategory.apparelType.mainCategory.name.slice(0, 3).toUpperCase()}-${subcategory.apparelType.name.slice(0, 3).toUpperCase()}-${subcategory.name.slice(0, 3).toUpperCase()}-${Date.now()}`;
+    const mainCat = subcategory.apparelType.mainCategory; // string
+    const apparelName = subcategory.apparelType.name;
+    const subcatName = subcategory.name;
+
+    const productCode = `${mainCat.slice(0,3).toUpperCase()}-${apparelName.slice(0,3).toUpperCase()}-${subcatName.slice(0,3).toUpperCase()}-${Date.now()}`;
 
     const newProduct = new Product({
       name,
       price,
       stock,
-      mainCategory: subcategory.apparelType.mainCategory.name,
-      apparelType: subcategory.apparelType.name,
-      subcategories: subcategory.name,
+      mainCategory: mainCat,
+      apparelType: apparelName,
+      subcategories: subcatName,
       sizesAvailable: Array.isArray(sizesAvailable) ? sizesAvailable : [sizesAvailable],
       colors: Array.isArray(colors) ? colors : [colors],
       description,
@@ -160,9 +137,36 @@ router.post('/subcategory/:subcatId/product',isAdmin,validateProduct, async (req
     await newProduct.save();
     res.redirect(`/subcategory/${subcategory._id}/products`);
   } catch (err) {
-    console.error(err);
+    console.error("Product creation error:", err);
     res.status(500).send("Error adding product");
   }
+});
+
+
+// DELETE apparel type
+router.delete('/categories/apparel/:apparelId', isAdmin, async (req, res) => {
+  const { apparelId } = req.params;
+  const apparel = await ApparelType.findByIdAndDelete(apparelId);
+
+  // Optional: delete related subcategories
+  if (apparel) {
+    await Subcategory.deleteMany({ apparelType: apparel._id });
+  }
+
+  res.redirect(`/categories/${apparel.mainCategory.toLowerCase()}`);
+});
+
+// DELETE subcategory
+router.delete('/categories/subcategory/:subcatId', isAdmin, async (req, res) => {
+  const subcat = await Subcategory.findByIdAndDelete(req.params.subcatId);
+
+  if (subcat) {
+    await ApparelType.findByIdAndUpdate(subcat.apparelType, {
+      $pull: { subcategories: subcat._id }
+    });
+  }
+
+  res.redirect("/categories/all");
 });
 
 
