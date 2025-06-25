@@ -1,12 +1,16 @@
 const express = require("express");
 const passport = require("passport");
 const Admin = require("../models/admin");
-require("./passport-config");
+require("../passport-config");
+const { isAdmin } = require("../middlewares");
+const Product = require("../models/product");
 const router = express.Router();
+
+const app = express();
 
 
 router.get("/login", (req,res)=>{
-  res.render("login.ejs");
+  res.render("admin/login.ejs");
 })
 
 // Login POST
@@ -20,8 +24,9 @@ router.post("/login", passport.authenticate("admin-local", {
 
 
 router.get("/signup",(req,res)=>{
-  res.render("signup.ejs");
+  res.render("admin/signup.ejs");
 })
+
 
 router.post("/signup", async (req, res) => {
   try {
@@ -66,7 +71,7 @@ app.get("/admin/auth/google/callback",
 
 //Dashboard
 router.get("/dashboard",isAdmin,  (req, res) => {
-  res.render("adminHome", { user: req.user });
+  res.render("admin/adminHome", { user: req.user });
 });
 
 
@@ -107,3 +112,6 @@ router.get("/stats", isAdmin, async (req, res) => {
     res.redirect("/admin/dashboard");
   }
 });
+
+
+module.exports = router;

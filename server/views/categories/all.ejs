@@ -1,4 +1,9 @@
 <h2>All Categories</h2>
+<h3>Add Main Category</h3>
+  <form action="/categories/main" method="POST">
+    <input type="text" name="name" placeholder="Main Category Name" required />
+    <button type="submit">Add</button>
+  </form>
 <% categories.forEach(main => { %>
   <h3><%= main.name %></h3>
   <ul>

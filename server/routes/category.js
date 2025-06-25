@@ -3,7 +3,7 @@ const router = express.Router();
 const MainCategory = require('../models/maincategory');
 const ApparelType = require('../models/appareltype');
 const Subcategory = require('../models/subcategory');
-const Product = require('../models/product'); // Assume this exists
+const Product = require('../models/product'); 
 const {validateProduct, isAdmin}= require("../middlewares.js");
 
 // --- FORMS ---

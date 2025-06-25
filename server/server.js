@@ -152,7 +152,6 @@ app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
 }); 
 
 
-<<<<<<< HEAD
 //Statistics
 app.get("/admin/stats", isAdmin, async (req, res) => {
   try {
@@ -184,8 +183,6 @@ app.get("/admin/stats", isAdmin, async (req, res) => {
     const orders = await Order.find().lean();
     res.render("orders", { orders });
   });
-=======
->>>>>>> 57a31d77d70322f6db200f4350e462c5d570fff6
 
   app.get("/admin/orders/:id", async (req, res) => {
     const order = await Order.findById(req.params.id).lean();
