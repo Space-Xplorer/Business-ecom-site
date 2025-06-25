@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const User = require("../models/user");
+require("../passport-config");
 
 const router = express.Router();
 
@@ -63,5 +64,9 @@ router.get("/dashboard", (req, res) => {
   }
   res.render("users/dashboard", { user: req.user });
 });
+
+
+
+
 
 module.exports = router;
