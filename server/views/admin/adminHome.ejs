@@ -1,13 +1,13 @@
 <% layout("/layouts/boilerplate") -%>
-<body>
-  <h1 class="text-center mt-5 fw-bold fs-2">Admin Home Page</h1>
+<body class="bg-light">
+  <div class="container py-5">
+    <h1 class="text-center mt-3 mb-4 fw-bold">Admin Home Page</h1>
 
-  <div class="container mt-4">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mb-4">
       <div class="card-body">
-        <h2 class="card-title h5 mb-3">Welcome,  <%= user.username %>!</h2>
-        <p>Role: <%= user.role %></p>
-        <p>Email: <%= user.email %></p>
+        <h2 class="card-title h5 mb-3">Welcome, <%= user.username %>!</h2>
+        <p class="mb-1"><strong>Role:</strong> <%= user.role %></p>
+        <p class="mb-1"><strong>Email:</strong> <%= user.email %></p>
         <p class="text-secondary">This is the admin home page where you can manage your application.</p>
         <ul class="list-unstyled mt-3">
           <li><a href="/admin/users" class="link-primary text-decoration-none">Manage Users</a></li>
@@ -17,6 +17,68 @@
           <li><a href="/newproduct" class="link-primary text-decoration-none">Add New Product ➕</a></li>
           <li><a href="/admin/stats" class="link-primary text-decoration-none">View Reports</a></li>
         </ul>
+      </div>
+    </div>
+
+    <!-- Carousel Management Section -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">
+        <h2 class="h5 mb-0">Manage Carousel Slides</h2>
+      </div>
+      <div class="card-body">
+        <form action="/carousel" method="POST" enctype="multipart/form-data" class="mb-4">
+          <div class="mb-3">
+            <label for="image" class="form-label">Slide Image</label>
+            <input type="file" class="form-control" id="image" name="image" required>
+          </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="link" class="form-label">Link</label>
+            <input type="text" class="form-control" id="link" name="link" required>
+          </div>
+          <div class="mb-3">
+            <label for="altText" class="form-label">Alt Text (optional)</label>
+            <input type="text" class="form-control" id="altText" name="altText">
+          </div>
+          <button type="submit" class="btn btn-primary">Add Slide</button>
+        </form>
+
+        <% if (slides && slides.length > 0) { %>
+          <h3 class="h6 mt-4 mb-3">Current Carousel Slides</h3>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Title</th>
+                  <th>Link</th>
+                  <th>Alt Text</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% slides.forEach(slide => { %>
+                  <tr>
+                    <td>
+                      <img src="<%= slide.imageUrl %>" alt="<%= slide.altText || slide.title %>" style="max-width: 80px;">
+                    </td>
+                    <td><%= slide.title %></td>
+                    <td><a href="<%= slide.link %>" target="_blank"><%= slide.link %></a></td>
+                    <td><%= slide.altText || '—' %></td>
+                    <td>
+                      <a href="/carousel/delete/<%= slide._id %>" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">No carousel slides found.</div>
+        <% } %>
       </div>
     </div>
   </div>

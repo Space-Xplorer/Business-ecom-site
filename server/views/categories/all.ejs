@@ -1,22 +1,23 @@
-<h2>All Categories</h2>
-<h3>Add Main Category</h3>
-  <form action="/categories/main" method="POST">
-    <input type="text" name="name" placeholder="Main Category Name" required />
-    <button type="submit">Add</button>
-  </form>
-<% categories.forEach(main => { %>
-  <h3><%= main.name %></h3>
-  <ul>
-    <% main.apparelTypes.forEach(app => { %>
-      <li><strong><%= app.name %></strong>
-        <ul>
-          <% app.subcategories.forEach(sub => { %>
-            <li>
-              <a href="/subcategory/<%= sub._id %>/products"><%= sub.name %></a>
-            </li>
-          <% }) %>
-        </ul>
-      </li>
-    <% }) %>
-  </ul>
-<% }) %>
+<% layout("/layouts/boilerplate") -%>
+<body class="bg-light">
+  <div class="container py-4">
+    <h1 class="h3 mb-4">All Subcategories</h1>
+    <% if (subcategories && subcategories.length > 0) { %>
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <% subcategories.forEach(sub => { %>
+          <div class="col">
+            <a href="/subcategory/<%= sub._id %>/products" class="text-decoration-none">
+              <div class="card h-100 text-white bg-dark" style="cursor: pointer;">
+                <div class="card-body d-flex align-items-center justify-content-center">
+                  <h5 class="card-title mb-0"><%= sub.name %></h5>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="alert alert-info">No subcategories found.</div>
+    <% } %>
+  </div>
+</body>
