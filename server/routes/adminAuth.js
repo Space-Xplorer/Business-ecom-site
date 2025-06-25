@@ -1,12 +1,12 @@
 const express = require("express");
 const passport = require("passport");
 const Admin = require("../models/admin");
-require("../passport-config");
 const { isAdmin } = require("../middlewares");
-const Product = require("../models/product");
+require("../passport-config");
 const router = express.Router();
 
 const app = express();
+
 
 
 router.get("/login", (req,res)=>{
@@ -57,7 +57,7 @@ router.get("/logout", (req, res) => {
 router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // Google callback
-app.get("/admin/auth/google/callback",
+router.get("/admin/auth/google/callback",
   passport.authenticate("google", {
     failureRedirect: "/admin/login",
     failureFlash: true

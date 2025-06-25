@@ -45,7 +45,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 
 const Admin = require("./models/admin"); // your admin model
-require("./passport-config"); // sets up Google and local strategy
+require("./passport-config.js"); // sets up Google and local strategy
 
 app.use(session({
   secret: "notagoodsecret",

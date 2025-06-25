@@ -9,18 +9,18 @@ const {validateProduct, isAdmin}= require("../middlewares.js");
 // --- FORMS ---
 
 // Add Main Category Form
-router.get('/categories/main/new', (req, res) => {
+router.get('/categories/main/new', isAdmin,(req, res) => {
   res.render('categories/main_form');
 });
 
 // Add Apparel Type Form
-router.get('/categories/apparel/new', async (req, res) => {
+router.get('/categories/apparel/new',isAdmin, async (req, res) => {
   const mainCategories = await MainCategory.find({});
   res.render('categories/apparel_form', { mainCategories });
 });
 
 // Add Subcategory Form
-router.get('/categories/subcategory/new', async (req, res) => {
+router.get('/categories/subcategory/new',isAdmin, async (req, res) => {
   const apparelTypes = await ApparelType.find({}).populate('mainCategory');
   res.render('categories/subcat_form', { apparelTypes });
 });
@@ -28,7 +28,7 @@ router.get('/categories/subcategory/new', async (req, res) => {
 // --- POST ROUTES ---
 
 // Create Main Category
-router.post('/categories/main', async (req, res) => {
+router.post('/categories/main',isAdmin, async (req, res) => {
   try {
     const { name } = req.body;
     const existing = await MainCategory.findOne({ name });
@@ -43,7 +43,7 @@ router.post('/categories/main', async (req, res) => {
 });
 
 // Create Apparel Type
-router.post('/categories/:mainId/apparel', async (req, res) => {
+router.post('/categories/:mainId/apparel', isAdmin, async (req, res) => {
   try {
     const { name } = req.body;
     const { mainId } = req.params;
@@ -64,7 +64,7 @@ router.post('/categories/:mainId/apparel', async (req, res) => {
 });
 
 // Create Subcategory
-router.post('/categories/apparel/:apparelId/subcategory', async (req, res) => {
+router.post('/categories/apparel/:apparelId/subcategory',isAdmin, async (req, res) => {
   try {
     const { name } = req.body;
     const { apparelId } = req.params;
@@ -87,7 +87,7 @@ router.post('/categories/apparel/:apparelId/subcategory', async (req, res) => {
 // --- DISPLAY ROUTES ---
 
 // All Categories (Nested)
-router.get('/categories/all', async (req, res) => {
+router.get('/categories/all',isAdmin, async (req, res) => {
   const categories = await MainCategory.find({})
     .populate({
       path: 'apparelTypes',
@@ -103,7 +103,7 @@ router.get('/products', async (req, res) => {
 });
 
 // Products by Subcategory
-router.get('/subcategory/:subcatId/products', async (req, res) => {
+router.get('/subcategory/:subcatId/products', isAdmin,async (req, res) => {
   const subcatId = req.params.subcatId;
   const subcategory = await Subcategory.findById(subcatId).populate({
     path: 'apparelType',
@@ -115,7 +115,7 @@ router.get('/subcategory/:subcatId/products', async (req, res) => {
 });
 
 // GET /subcategory/:subcatId/product/new
-router.get('/subcategory/:subcatId/product/new', async (req, res) => {
+router.get('/subcategory/:subcatId/product/new',isAdmin, async (req, res) => {
   const subcategory = await Subcategory.findById(req.params.subcatId)
     .populate({
       path: 'apparelType',
@@ -128,7 +128,7 @@ router.get('/subcategory/:subcatId/product/new', async (req, res) => {
 
 
 // POST /subcategory/:subcatId/product
-router.post('/subcategory/:subcatId/product',validateProduct, async (req, res) => {
+router.post('/subcategory/:subcatId/product',isAdmin,validateProduct, async (req, res) => {
   try {
     const subcategory = await Subcategory.findById(req.params.subcatId)
       .populate({
