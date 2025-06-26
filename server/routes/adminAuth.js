@@ -71,10 +71,11 @@ router.get("/admin/auth/google/callback",
 
 //------------------------------ROUTES-------------------------------------------------
 
+const CarouselSlide = require('../models/carouselSlide');
 //Dashboard
-router.get("/dashboard",isAdmin,  (req, res) => {
-  // const slides = await carouselSlide.find({});
-  res.render("admin/adminHome.ejs", { user: req.user });
+router.get("/dashboard",isAdmin,  async (req, res) => {
+  const slides = await CarouselSlide.find({});
+  res.render("admin/adminHome.ejs", { user: req.user, slides });
 });
 
 

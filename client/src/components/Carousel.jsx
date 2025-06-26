@@ -5,11 +5,22 @@ import 'slick-carousel/slick/slick-theme.css';
 
 export default function Carousel() {
   const [slides, setSlides] = useState([]);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   useEffect(() => {
-    fetch('/api/carousel')
-      .then(res => res.json())
-      .then(data => setSlides(data));
+    const fetchSlides = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/carousel');
+        if (!response.ok) throw new Error('Failed to fetch slides');
+        const data = await response.json();
+        setSlides(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSlides();
   }, []);
 
   const settings = {
@@ -22,12 +33,20 @@ export default function Carousel() {
     autoplaySpeed: 3000,
   };
 
+  if (loading) return <div className="text-center py-8">Loading carousel...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+  if (slides.length === 0) return <div className="text-center py-8">No slides available</div>;
+
   return (
     <Slider {...settings}>
       {slides.map((slide, idx) => (
         <div key={idx}>
           <a href={slide.link} target="_blank" rel="noreferrer">
-            <img src={slide.imageUrl} alt={slide.altText || slide.title} className="w-full h-[400px] object-cover rounded-lg" />
+            <img
+              src={slide.imageUrl}
+              alt={slide.altText || slide.title}
+              className="w-full h-[400px] object-cover rounded-lg"
+            />
           </a>
         </div>
       ))}

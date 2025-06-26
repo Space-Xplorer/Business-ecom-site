@@ -3,6 +3,9 @@ const express=require("express");
 const app=express();
 const path= require("path");
 const port=8080;
+const cors = require('cors');
+
+app.use(cors());
 const mongoose = require("mongoose");
 
 const methodOverride = require('method-override');
@@ -130,7 +133,7 @@ app.get("/products/:id", isAdmin, async (req, res, next) => {
       req.flash("error", "Product not found");
       return res.redirect("/admin/products");
     }
-    res.render("productdetails.ejs", { product });
+    res.render("products/productdetails.ejs", { product });
   } catch (err) {
     next(err);
   }
@@ -151,7 +154,6 @@ app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
   }
 }); 
 
-app.use('/uploads', express.static('uploads'));
 
 //Statistics
 app.get("/admin/stats", isAdmin, async (req, res) => {
@@ -191,6 +193,16 @@ app.get("/admin/stats", isAdmin, async (req, res) => {
     res.render("orderdetail", { order });
   });
   
+
+//carousel
+// Serve static files from 'uploads' directory
+app.use('/uploads', express.static('uploads'));
+
+// Use carousel routes
+const carouselRoutes = require('./routes/carousel.js');
+app.use(carouselRoutes);
+
+
 
 
 app.use((req, res, next) => {

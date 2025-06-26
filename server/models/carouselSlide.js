@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const carouselSlideSchema = new mongoose.Schema({
   imageUrl: { type: String, required: true },
@@ -8,4 +8,4 @@ const carouselSlideSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
-export default mongoose.model('CarouselSlide', carouselSlideSchema);
+module.exports = mongoose.model('CarouselSlide', carouselSlideSchema);
