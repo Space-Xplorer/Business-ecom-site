@@ -1,13 +1,7 @@
+
 <% layout("/layouts/boilerplate") -%>
 
-<h2 class="mb-4">
-  Products in <%= subcategory.name %>
-  (<%= subcategory.apparelType.name %> - <%= subcategory.apparelType.mainCategory.name %>)
-</h2>
-
-<a href="/subcategory/<%= subcategory._id %>/product/new" class="btn btn-primary mb-3">
-  Add New Product
-</a>
+<h2 class="mb-4">All Products</h2>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
   <% products.forEach(p => { %>
@@ -25,7 +19,7 @@
             <p class="card-text"><%= p.description.substring(0, 100) %>...</p>
           <% } %>
           <p class="card-text">
-            <small class="text-muted">Stock: <%= p.stock %></small><br>
+            <small>Stock: <%= p.stock %></small><br>
             <% if (p.sizesAvailable.length > 0) { %>
               <small>Sizes: <%= p.sizesAvailable.join(', ') %></small><br>
             <% } %>
@@ -34,10 +28,14 @@
             <% } %>
           </p>
         </div>
-        <div class="card-footer text-center">
-          <small class="text-muted">Product Code: <%= p.productCode %></small>
+        <div class="card-footer d-flex justify-content-between">
+          <a href="/products/<%= p._id %>/edit" class="btn btn-sm btn-outline-primary">Edit</a>
+          <form action="/products/<%= p._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
         </div>
       </div>
     </div>
   <% }) %>
 </div>
+
