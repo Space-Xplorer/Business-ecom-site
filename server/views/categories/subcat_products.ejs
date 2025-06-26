@@ -1,14 +1,43 @@
-<h2>
+<% layout("/layouts/boilerplate") -%>
+
+<h2 class="mb-4">
   Products in <%= subcategory.name %>
   (<%= subcategory.apparelType.name %> - <%= subcategory.apparelType.mainCategory.name %>)
 </h2>
 
-<a href="/subcategory/<%= subcategory._id %>/product/new">
-  <button>Add New Product</button>
+<a href="/subcategory/<%= subcategory._id %>/product/new" class="btn btn-primary mb-3">
+  Add New Product
 </a>
 
-<ul>
+<div class="row row-cols-1 row-cols-md-3 g-4">
   <% products.forEach(p => { %>
-    <li><%= p.name %> - ₹<%= p.price %></li>
+    <div class="col">
+      <div class="card h-100 shadow-sm">
+        <% if (p.photos && p.photos.length > 0) { %>
+          <img src="<%= p.photos[0] %>" class="card-img-top" alt="<%= p.name %>" style="height: 200px; object-fit: cover;">
+        <% } else { %>
+          <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image">
+        <% } %>
+        <div class="card-body">
+          <h5 class="card-title"><%= p.name %></h5>
+          <p class="card-text text-muted">₹<%= p.price %></p>
+          <% if (p.description) { %>
+            <p class="card-text"><%= p.description.substring(0, 100) %>...</p>
+          <% } %>
+          <p class="card-text">
+            <small class="text-muted">Stock: <%= p.stock %></small><br>
+            <% if (p.sizesAvailable.length > 0) { %>
+              <small>Sizes: <%= p.sizesAvailable.join(', ') %></small><br>
+            <% } %>
+            <% if (p.colors.length > 0) { %>
+              <small>Colors: <%= p.colors.join(', ') %></small>
+            <% } %>
+          </p>
+        </div>
+        <div class="card-footer text-center">
+          <small class="text-muted">Product Code: <%= p.productCode %></small>
+        </div>
+      </div>
+    </div>
   <% }) %>
-</ul>
+</div>
