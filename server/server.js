@@ -151,6 +151,7 @@ app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
   }
 }); 
 
+app.use('/uploads', express.static('uploads'));
 
 //Statistics
 app.get("/admin/stats", isAdmin, async (req, res) => {

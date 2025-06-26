@@ -7,10 +7,10 @@ const router = express.Router();
 
 const app = express();
 
-
-
+//------------------------------AUTH-------------------------------------------------
+//Login Page
 router.get("/login", (req,res)=>{
-  res.render("admin/login.ejs");
+  res.render("admin/login");
 })
 
 // Login POST
@@ -22,7 +22,7 @@ router.post("/login", passport.authenticate("admin-local", {
   res.redirect("/admin/dashboard");
 });
 
-
+//Signup
 router.get("/signup",(req,res)=>{
   res.render("admin/signup.ejs");
 })
@@ -69,9 +69,12 @@ router.get("/admin/auth/google/callback",
 );
 
 
+//------------------------------ROUTES-------------------------------------------------
+
 //Dashboard
 router.get("/dashboard",isAdmin,  (req, res) => {
-  res.render("admin/adminHome", { user: req.user });
+  // const slides = await carouselSlide.find({});
+  res.render("admin/adminHome.ejs", { user: req.user });
 });
 
 

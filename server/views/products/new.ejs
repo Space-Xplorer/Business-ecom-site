@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 <% layout("/layouts/boilerplate") -%>
 <h2 class="mb-4">Add Product to <%= subcategory.name %> (<%= subcategory.apparelType.name %> &gt; <%= subcategory.apparelType.mainCategory.name %>)</h2>
@@ -60,3 +61,76 @@
     })
   })()
 </script>
+=======
+<% layout("/layouts/boilerplate") -%>
+<body>
+  <div class="row">
+    <div class="col-8 offset-2">
+      <br>
+      <h3 class="text-center">
+        Add Product to <strong><%= subcategory.name %></strong><br>
+        <small>
+          (<%= subcategory.apparelType.name %> in category <%= subcategory.apparelType.mainCategory.name %>)
+        </small>
+      </h3>
+      <br>
+
+      <form method="POST" action="/subcategory/<%= subcategory._id %>/product" novalidate class="needs-validation">
+        <div class="mb-3">
+          <label for="name" class="form-label">Product Name</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Category</label>
+          <input type="text" class="form-control" value="<%= subcategory.apparelType.mainCategory.name %>" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Apparel Type</label>
+          <input type="text" class="form-control" value="<%= subcategory.apparelType.name %>" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Subcategory</label>
+          <input type="text" class="form-control" value="<%= subcategory.name %>" readonly>
+        </div>
+
+        <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="stock" class="form-label">Stock</label>
+          <input type="number" class="form-control" id="stock" name="stock" min="0" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="sizesAvailable" class="form-label">Sizes Available (comma-separated)</label>
+          <input type="text" class="form-control" id="sizesAvailable" name="sizesAvailable">
+        </div>
+
+        <div class="mb-3">
+          <label for="colors" class="form-label">Colors (comma-separated)</label>
+          <input type="text" class="form-control" id="colors" name="colors">
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label for="photos" class="form-label">Photo URLs (comma-separated)</label>
+          <input type="text" class="form-control" id="photos" name="photos" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg">
+        </div>
+
+        <br>
+        <button class="btn btn-dark" type="submit">Add Product</button>
+        <br><br>
+      </form>
+    </div>
+  </div>
+</body>
+>>>>>>> 2273e78ba08d3b34a17a4743932771adf593247d
