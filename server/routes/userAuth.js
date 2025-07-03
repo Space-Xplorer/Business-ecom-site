@@ -52,9 +52,10 @@ router.get("/auth/google", passport.authenticate("user-google", {
 
 router.get("/auth/google/callback",
   passport.authenticate("user-google", {
-    failureRedirect: "http://localhost:5173/login", // React login page
+    failureRedirect: "http://localhost:5173/login",
   }),
   (req, res) => {
+    console.log("✅ Google login successful:", req.user);
     res.redirect("http://localhost:5173/");
   }
 );
