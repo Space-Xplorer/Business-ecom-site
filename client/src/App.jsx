@@ -3,20 +3,29 @@ import LandingPage from "./pages/LandingPage";
 import AboutUs from "./pages/AboutUs";
 import ApparelsPage from "./pages/ApparelsPage";
 import ProductsPage from "./pages/ProductsPage";
-import UserLogin from "./UserLogin";
 import Signup from "./pages/signup";
 import Login from "./pages/Login";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/about" element={<AboutUs />} />
-      <Route path="/apparels" element={<ApparelsPage />} />
-      <Route path="/products" element={<ProductsPage />} />
-      <Route path="/signup" element={<Signup />}></Route>
-      <Route path="/login" element={<Login/>}></Route>
-    </Routes>
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header />
+      <main className="flex-1 pt-20"> {/* pt-20 for header height offset */}
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/apparels" element={<ApparelsPage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/signup" element={<Signup />}></Route>
+          <Route path="/login" element={<Login/>}></Route>
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
   );
 }
 

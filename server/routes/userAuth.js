@@ -62,4 +62,19 @@ router.get("/dashboard", (req, res) => {
   res.status(200).json({ user: req.user });
 });
 
+// === Google OAuth Login ===
+router.get("/auth/google", passport.authenticate("user-google", { scope: ["profile", "email"] }));
+
+// === Google OAuth Callback ===
+router.get("/auth/google/callback",
+  passport.authenticate("user-google", {
+    failureRedirect: "/login",
+    failureFlash: true
+  }),
+  (req, res) => {
+    // Redirect to frontend after successful login
+    res.redirect("http://localhost:5173/profile");
+  }
+);
+
 module.exports = router;

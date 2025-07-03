@@ -1,53 +1,4 @@
-import { Link } from "react-router-dom";
 import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
-
-// Sample data (replace with API fetch in real app)
-const categories = [
-  {
-    '_id': 'cat1',
-    'name': 'Men',
-    'apparelTypes': [
-      {
-        '_id': 'app1',
-        'name': 'Shirts',
-        'subcategories': [
-          { '_id': 'sub1', 'name': 'Casual Shirts' },
-          { '_id': 'sub2', 'name': 'Formal Shirts' }
-        ]
-      },
-      {
-        '_id': 'app2',
-        'name': 'Trousers',
-        'subcategories': [
-          { '_id': 'sub3', 'name': 'Jeans' },
-          { '_id': 'sub4', 'name': 'Chinos' }
-        ]
-      }
-    ]
-  },
-  {
-    '_id': 'cat2',
-    'name': 'Women',
-    'apparelTypes': [
-      {
-        '_id': 'app3',
-        'name': 'Dresses',
-        'subcategories': [
-          { '_id': 'sub5', 'name': 'Evening Dresses' },
-          { '_id': 'sub6', 'name': 'Summer Dresses' }
-        ]
-      },
-      {
-        '_id': 'app4',
-        'name': 'Tops',
-        'subcategories': [
-          { '_id': 'sub7', 'name': 'Casual Tops' },
-          { '_id': 'sub8', 'name': 'Formal Tops' }
-        ]
-      }
-    ]
-  }
-];
 
 export default function Footer() {
   return (
@@ -56,63 +7,52 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Logo & Social */}
           <div className="flex flex-col items-center md:items-start">
-            <img src="/Logo.jpg" alt="Erimuga Logo" className="mb-2 h-14 w-14 object-contain rounded shadow" />
+            <img src="/Logo.jpg" alt="Erimuga Logo" className="mb-2 h-10 w-10 object-contain rounded shadow" />
             <span className="text-xl font-bold text-black mb-2" style={{ color: '#FFD700' }}>ERIMUGA</span>
             <div className="flex gap-4">
-              <a href="https://facebook.com" target="_blank" rel="noreferrer">
+              <a href="https://www.facebook.com/erimuga" target="_blank" rel="noreferrer">
                 <FaFacebook size={24} className="text-gray-700 hover:text-[#F26A1B]" />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer">
+              <a href="https://www.instagram.com/erimuga" target="_blank" rel="noreferrer">
                 <FaInstagram size={24} className="text-gray-700 hover:text-[#F26A1B]" />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noreferrer">
+              <a href="https://twitter.com/erimuga" target="_blank" rel="noreferrer">
                 <FaTwitter size={24} className="text-gray-700 hover:text-[#F26A1B]" />
               </a>
             </div>
           </div>
 
-          {/* Categories, Apparel Types, Subcategories */}
-          {categories.map(category => (
-            <div key={category._id} className="space-y-2">
-              <h3 className="font-bold text-lg">
-                <Link to={`/categories/${category._id}/apparel`} className="hover:text-[#F26A1B]">
-                  {category.name}
-                </Link>
-              </h3>
-              <ul className="space-y-1 pl-2">
-                {category.apparelTypes.map(apparelType => (
-                  <li key={apparelType._id}>
-                    <Link to={`/apparel/${apparelType._id}/subcategories`} className="hover:text-[#F26A1B]">
-                      {apparelType.name}
-                    </Link>
-                    <ul className="pl-4 space-y-1">
-                      {apparelType.subcategories.map(subcategory => (
-                        <li key={subcategory._id}>
-                          <Link to={`/subcategory/${subcategory._id}/products`} className="hover:text-[#F26A1B]">
-                            {subcategory.name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Real Website Links */}
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg">Our Website</h3>
+            <ul className="space-y-1">
+              <li><a href="https://erimuga.com" target="_blank" rel="noreferrer" className="hover:text-[#F26A1B]">erimuga.com</a></li>
+              <li><a href="https://erimuga.com/products" target="_blank" rel="noreferrer" className="hover:text-[#F26A1B]">Products</a></li>
+              <li><a href="https://erimuga.com/about" target="_blank" rel="noreferrer" className="hover:text-[#F26A1B]">About Us</a></li>
+              <li><a href="https://erimuga.com/contact" target="_blank" rel="noreferrer" className="hover:text-[#F26A1B]">Contact</a></li>
+            </ul>
+          </div>
 
-          {/* Extra Links */}
+          {/* Quick Links */}
           <div className="space-y-2">
             <h3 className="font-bold text-lg">Quick Links</h3>
             <ul className="space-y-1">
-              <li><Link to="/about" className="hover:text-[#F26A1B]">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-[#F26A1B]">Contact</Link></li>
-              <li><Link to="/privacy" className="hover:text-[#F26A1B]">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-[#F26A1B]">Terms of Service</Link></li>
+              <li><a href="https://erimuga.com/privacy" target="_blank" rel="noreferrer" className="hover:text-[#F26A1B]">Privacy Policy</a></li>
+              <li><a href="https://erimuga.com/terms" target="_blank" rel="noreferrer" className="hover:text-[#F26A1B]">Terms of Service</a></li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div className="space-y-2">
+            <h3 className="font-bold text-lg">Contact</h3>
+            <ul className="space-y-1">
+              <li><a href="mailto:info@erimuga.com" className="hover:text-[#F26A1B]">info@erimuga.com</a></li>
+              <li>Assam, India</li>
             </ul>
           </div>
         </div>
         <div className="mt-8 pt-4 border-t border-gray-300 text-center text-gray-700">
-          &copy; {new Date().getFullYear()} <span style={{ color: '#FFD700' }}>Erimund</span>. All rights reserved.
+          &copy; {new Date().getFullYear()} <span style={{ color: '#FFD700' }}>ERIMUGA</span>. All rights reserved.
         </div>
       </div>
     </footer>

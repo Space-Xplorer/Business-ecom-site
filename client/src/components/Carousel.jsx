@@ -43,18 +43,26 @@ export default function Carousel() {
   if (slides.length === 0) return <div className="text-center py-8">No slides available</div>;
 
   return (
-    <Slider {...settings}>
-      {slides.map((slide, idx) => (
-        <div key={idx}>
-          <a href={slide.link} target="_blank" rel="noreferrer">
-            <img
-              src={slide.imageUrl}
-              alt={slide.altText || slide.title || 'Erimund Carousel Slide'}
-              className="w-full h-[600px] object-cover rounded-lg"
-            />
-          </a>
-        </div>
-      ))}
-    </Slider>
+    <div className="w-screen h-screen min-h-screen relative overflow-hidden">
+      <Slider {...settings} className="h-full w-full">
+        {slides.map((slide, idx) => (
+          <div key={idx} className="relative">
+            <a href={slide.link} target="_blank" rel="noreferrer">
+              <img
+                src={slide.imageUrl}
+                alt={slide.altText || slide.title || 'Erimuga Carousel Slide'}
+                className="w-full h-[600px] object-cover rounded-lg"
+              />
+              {/* Overlay title at bottom center */}
+              {slide.title && (
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-8 px-6 py-3 bg-black bg-opacity-60 text-white text-2xl font-bold rounded shadow-lg text-center max-w-xl w-full">
+                  {slide.title}
+                </div>
+              )}
+            </a>
+          </div>
+        ))}
+      </Slider>
+    </div>
   );
 }

@@ -51,14 +51,20 @@ export default function Header() {
           <Link to="/cart" className="text-black hover:text-[#F26A1B] transition">Cart</Link>
 
           {!user ? (
-            <Link to="/login" className="text-black hover:text-[#F26A1B] transition">Login</Link>
+            <>
+              <Link to="/login" className="text-black hover:text-[#F26A1B] transition">Login</Link>
+              <Link to="/signup" className="text-black hover:text-[#F26A1B] transition">Sign Up</Link>
+            </>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="text-black hover:text-red-500 transition bg-transparent border-none cursor-pointer"
-            >
-              Logout
-            </button>
+            <>
+              <Link to="/profile" className="text-black hover:text-[#F26A1B] transition">Profile</Link>
+              <button
+                onClick={handleLogout}
+                className="text-black hover:text-red-500 transition bg-transparent border-none cursor-pointer"
+              >
+                Logout
+              </button>
+            </>
           )}
         </nav>
       </div>
