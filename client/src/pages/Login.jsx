@@ -30,7 +30,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-[#FFF8E1] via-[#FFD700]/20 to-[#F26A1B]/10">
+    <div className="min-h-165 max-h-screen flex flex-col md:flex-row bg-gradient-to-br from-[#FFF8E1] via-[#FFD700]/20 to-[#F26A1B]/10">
       {/* Left: Login Form */}
       <div className="flex-1 flex items-center justify-center p-8 bg-white shadow-xl z-10">
         <div className="w-full max-w-md space-y-6">
@@ -71,9 +71,14 @@ export default function Login() {
         </div>
       </div>
       {/* Right: Carousel */}
-      <div className="hidden md:flex flex-1 items-center justify-center bg-black/80 relative">
+      <div className="hidden md:flex flex-1 items-center justify-center bg-black/80 relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <Carousel />
+          <Carousel 
+            showArrows={false} 
+            showDots={false} 
+            autoplaySpeed={4000}
+            height="h-full"
+          />
         </div>
         <div className="absolute inset-0 bg-gradient-to-l from-black/80 to-transparent z-10" />
       </div>

@@ -80,13 +80,13 @@ export default function ProductsPage() {
       <svg className="absolute top-0 left-0 w-full h-32 opacity-10 z-0" viewBox="0 0 1440 320"><path fill="#FFD700" fillOpacity="0.2" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path></svg>
       <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
         <h1 className="text-5xl font-extrabold text-black mb-10 text-center tracking-wider drop-shadow">Products</h1>
-        {/* Artistic Divider */}
+        {/* Artistic Divider
         <div className="w-full flex justify-center mb-10">
           <div className="h-2 w-32 bg-gradient-to-r from-[#FFD700] via-[#F26A1B] to-[#FFD700] rounded-full shadow" />
-        </div>
+        </div> */}
         {/* Filters */}
         <section className="mb-10 flex flex-col md:flex-row gap-6 items-center justify-center">
-          <input className="px-4 py-2 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow focus:outline-none focus:ring-2 focus:ring-[#F26A1B] text-lg" placeholder="Search by name..." value={filters.subcategory} onChange={e => setFilters(f => ({ ...f, subcategory: e.target.value }))} />
+          <input className="px-4 py-2 flex-1 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow focus:outline-none focus:ring-2 focus:ring-[#F26A1B] text-lg" placeholder="Search by name..." value={filters.subcategory} onChange={e => setFilters(f => ({ ...f, subcategory: e.target.value }))} />
           <select className="px-4 py-2 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow focus:outline-none focus:ring-2 focus:ring-[#F26A1B] text-lg" value={filters.price} onChange={e => setFilters(f => ({ ...f, price: e.target.value }))}>
             <option value="">All Prices</option>
             <option value="low">Below ₹2000</option>
