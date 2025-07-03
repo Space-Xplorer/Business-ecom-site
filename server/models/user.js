@@ -1,21 +1,49 @@
 const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
 
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
-const userSchema = new Schema({
-  email: { type: String, unique: true, required: true },
-  firstName: String,
-  lastName: String,
-  phone: String,
-  role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
-  addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
+const userSchema = new Schema(
+  {
+    email: {
+      type: String,
+      unique: true,
+      required: [true, "Email is required"],
+      lowercase: true,
+      trim: true,
+    },
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
+    },
+    role: {
+      type: String,
+      enum: ["customer", "admin"],
+      default: "customer",
+    },
+    addresses: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Address",
+      },
+    ],
+  },
+  {
+    timestamps: true, // adds createdAt and updatedAt automatically
+  }
+);
 
+// Use email instead of username
 userSchema.plugin(passportLocalMongoose, {
-  usernameField: "email" // Makes "email" the login field
+  usernameField: "email",
 });
 
 module.exports = mongoose.model("User", userSchema);
