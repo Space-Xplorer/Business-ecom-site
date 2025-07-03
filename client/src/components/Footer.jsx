@@ -51,21 +51,22 @@ const categories = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-100 py-8 mt-12">
+    <footer className="bg-gray-100 py-8 mt-12 border-t-2 border-[#FFD700]">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Logo & Social */}
           <div className="flex flex-col items-center md:items-start">
-            <img src="https://via.placeholder.com/120x60?text=The+Textile+Store" alt="The Textile Store" className="mb-4" />
+            <img src="/Logo.jpg" alt="Erimund Logo" className="mb-2 h-14 w-14 object-contain rounded shadow" />
+            <span className="text-xl font-bold text-black mb-2" style={{ color: '#FFD700' }}>Erimund</span>
             <div className="flex gap-4">
               <a href="https://facebook.com" target="_blank" rel="noreferrer">
-                <FaFacebook size={24} className="text-gray-700 hover:text-indigo-600" />
+                <FaFacebook size={24} className="text-gray-700 hover:text-[#F26A1B]" />
               </a>
               <a href="https://instagram.com" target="_blank" rel="noreferrer">
-                <FaInstagram size={24} className="text-gray-700 hover:text-indigo-600" />
+                <FaInstagram size={24} className="text-gray-700 hover:text-[#F26A1B]" />
               </a>
               <a href="https://twitter.com" target="_blank" rel="noreferrer">
-                <FaTwitter size={24} className="text-gray-700 hover:text-indigo-600" />
+                <FaTwitter size={24} className="text-gray-700 hover:text-[#F26A1B]" />
               </a>
             </div>
           </div>
@@ -74,20 +75,20 @@ export default function Footer() {
           {categories.map(category => (
             <div key={category._id} className="space-y-2">
               <h3 className="font-bold text-lg">
-                <Link to={`/categories/${category._id}/apparel`} className="hover:text-indigo-600">
+                <Link to={`/categories/${category._id}/apparel`} className="hover:text-[#F26A1B]">
                   {category.name}
                 </Link>
               </h3>
               <ul className="space-y-1 pl-2">
                 {category.apparelTypes.map(apparelType => (
                   <li key={apparelType._id}>
-                    <Link to={`/apparel/${apparelType._id}/subcategories`} className="hover:text-indigo-600">
+                    <Link to={`/apparel/${apparelType._id}/subcategories`} className="hover:text-[#F26A1B]">
                       {apparelType.name}
                     </Link>
                     <ul className="pl-4 space-y-1">
                       {apparelType.subcategories.map(subcategory => (
                         <li key={subcategory._id}>
-                          <Link to={`/subcategory/${subcategory._id}/products`} className="hover:text-indigo-600">
+                          <Link to={`/subcategory/${subcategory._id}/products`} className="hover:text-[#F26A1B]">
                             {subcategory.name}
                           </Link>
                         </li>
@@ -103,15 +104,15 @@ export default function Footer() {
           <div className="space-y-2">
             <h3 className="font-bold text-lg">Quick Links</h3>
             <ul className="space-y-1">
-              <li><Link to="/about" className="hover:text-indigo-600">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-indigo-600">Contact</Link></li>
-              <li><Link to="/privacy" className="hover:text-indigo-600">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-indigo-600">Terms of Service</Link></li>
+              <li><Link to="/about" className="hover:text-[#F26A1B]">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-[#F26A1B]">Contact</Link></li>
+              <li><Link to="/privacy" className="hover:text-[#F26A1B]">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-[#F26A1B]">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
         <div className="mt-8 pt-4 border-t border-gray-300 text-center text-gray-700">
-          &copy; {new Date().getFullYear()} The Textile Store. All rights reserved.
+          &copy; {new Date().getFullYear()} <span style={{ color: '#FFD700' }}>Erimund</span>. All rights reserved.
         </div>
       </div>
     </footer>

@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function Carousel() {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   useEffect(() => {
     const fetchSlides = async () => {
       try {
         const response = await fetch('http://localhost:8080/api/carousel');
         if (!response.ok) throw new Error('Failed to fetch slides');
         const data = await response.json();
+        // Add this console.log for debugging!
+        console.log("Fetched slides data:", data);
         setSlides(data);
       } catch (err) {
         setError(err.message);
@@ -22,6 +26,7 @@ export default function Carousel() {
     };
     fetchSlides();
   }, []);
+
 
   const settings = {
     dots: true,
@@ -44,8 +49,8 @@ export default function Carousel() {
           <a href={slide.link} target="_blank" rel="noreferrer">
             <img
               src={slide.imageUrl}
-              alt={slide.altText || slide.title}
-              className="w-full h-[400px] object-cover rounded-lg"
+              alt={slide.altText || slide.title || 'Erimund Carousel Slide'}
+              className="w-full h-[600px] object-cover rounded-lg"
             />
           </a>
         </div>
