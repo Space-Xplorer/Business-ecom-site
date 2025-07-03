@@ -1,25 +1,32 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function UserLogin() {
+axios.defaults.withCredentials = true;
+
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      // Replace with real login logic
-      if (!email || !password) {
-        setError("Please fill in all fields.");
-        return;
-      }
+      const res = await axios.post("http://localhost:8080/user/login", {
+        email,
+        password,
+      });
 
-      console.log("Logging in with:", email, password);
-      alert("Login successful!");
+      if (res.status === 200) {
+        // Redirect to dashboard after successful login
+        navigate("/");
+      }
     } catch (err) {
-      setError("Login failed. Please try again.");
+      console.error(err);
+      setError(err?.response?.data?.message || "Login failed");
     }
   };
 
@@ -39,6 +46,7 @@ export default function UserLogin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoFocus
             />
           </div>
 
@@ -61,7 +69,7 @@ export default function UserLogin() {
         <div className="text-center mt-3">
           <small>
             Don’t have an account?{" "}
-            <a href="/user/signup" className="text-decoration-none">
+            <a href="/signup" className="text-decoration-none">
               Sign up
             </a>
           </small>
