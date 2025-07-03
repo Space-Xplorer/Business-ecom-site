@@ -5,8 +5,8 @@ export default function Header() {
     <header className="bg-white shadow-md border-b-2 border-[#FFD700]">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/Logo.jpg" alt="Erimund Logo" className="h-10 w-10 object-contain rounded" />
-          <span className="text-2xl font-bold text-black tracking-wide" style={{ color: '#FFD700' }}>Erimund</span>
+          <img src="/Logo.jpg" alt="Erimuga Logo" className="h-10 w-10 object-contain rounded" />
+          <span className="text-2xl font-bold text-black tracking-wide" style={{ color: '#FFD700' }}>ERIMUGA</span>
         </Link>
         <nav className="flex gap-6 text-lg font-medium">
           <Link to="/" className="text-black hover:text-[#F26A1B] transition">Home</Link>
