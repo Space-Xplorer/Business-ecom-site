@@ -41,7 +41,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 w-full z-50 bg-white shadow-md border-b-2 border-[#FFD700]">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/Logo.jpg" alt="Erimuga Logo" className="h-10.5 w-auto object-contain rounded" />
+          <img src="/Logo.jpg" alt="Erimuga Logo" className="h-10.5 w-auto object-contain" />
           {/* <span className="text-2xl font-bold tracking-wide" style={{ color: '#FFD700' }}>ERIMUGA</span> */}
         </Link>
 

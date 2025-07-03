@@ -38,7 +38,7 @@ export default function LandingPage() {
         {/* Hero Section: Carousel */}
         <section className="w-full bg-black flex flex-col items-center justify-center py-8 border-b-4 border-[#F26A1B] relative z-10 shadow-2xl">
           <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent rounded-lg z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none" />
             <Carousel />
           </div>
         </section>
