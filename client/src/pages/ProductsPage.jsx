@@ -68,7 +68,7 @@ export default function ProductsPage() {
     });
   };
 
-  // Filter logic (placeholder, can be improved if you have categories)
+  // Filter logic
   const filtered = productImages.filter(p =>
     (!filters.subcategory || p.name.toLowerCase().includes(filters.subcategory.toLowerCase())) &&
     (!filters.price || (filters.price === "low" ? p.price < 2000 : p.price >= 2000))
@@ -77,45 +77,121 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8E1] via-[#FFD700]/20 to-[#F26A1B]/10 relative overflow-x-hidden pb-16">
       {/* Assamese motif SVG background */}
-      <svg className="absolute top-0 left-0 w-full h-32 opacity-10 z-0" viewBox="0 0 1440 320"><path fill="#FFD700" fillOpacity="0.2" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path></svg>
+      <svg className="absolute top-0 left-0 w-full h-32 opacity-10 z-0" viewBox="0 0 1440 320">
+        <path fill="#FFD700" fillOpacity="0.2" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+      </svg>
+      
       <div className="max-w-7xl mx-auto px-4 py-12 relative z-10">
-        <h1 className="text-5xl font-extrabold text-black mb-10 text-center tracking-wider drop-shadow">Products</h1>
-        {/* Artistic Divider
-        <div className="w-full flex justify-center mb-10">
-          <div className="h-2 w-32 bg-gradient-to-r from-[#FFD700] via-[#F26A1B] to-[#FFD700] rounded-full shadow" />
-        </div> */}
-        {/* Filters */}
-        <section className="mb-10 flex flex-col md:flex-row gap-6 items-center justify-center">
-          <input className="px-4 py-2 flex-1 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow focus:outline-none focus:ring-2 focus:ring-[#F26A1B] text-lg" placeholder="Search by name..." value={filters.subcategory} onChange={e => setFilters(f => ({ ...f, subcategory: e.target.value }))} />
-          <select className="px-4 py-2 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow focus:outline-none focus:ring-2 focus:ring-[#F26A1B] text-lg" value={filters.price} onChange={e => setFilters(f => ({ ...f, price: e.target.value }))}>
-            <option value="">All Prices</option>
-            <option value="low">Below ₹2000</option>
-            <option value="high">₹2000 & Above</option>
-          </select>
+        {/* Page Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-extrabold text-black mb-6 tracking-wider drop-shadow-lg">
+            Our Products
+          </h1>
+          <p className="text-gray-700 text-lg max-w-2xl mx-auto">
+            Discover our exquisite collection of handwoven Assamese textiles, crafted with traditional techniques and modern elegance.
+          </p>
+        </div>
+
+        {/* Filters Section */}
+        <section className="mb-12">
+          <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-[#FFD700]/40">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+              <div className="flex-1 max-w-md">
+                <label className="block text-gray-700 font-semibold mb-2">Search Products</label>
+                <input 
+                  className="w-full px-4 py-3 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F26A1B] focus:border-transparent text-lg" 
+                  placeholder="Search by name..." 
+                  value={filters.subcategory} 
+                  onChange={e => setFilters(f => ({ ...f, subcategory: e.target.value }))} 
+                />
+              </div>
+              <div className="w-full md:w-auto">
+                <label className="block text-gray-700 font-semibold mb-2">Filter by Price</label>
+                <select 
+                  className="w-full md:w-48 px-4 py-3 rounded-lg border-2 border-[#FFD700]/40 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F26A1B] focus:border-transparent text-lg" 
+                  value={filters.price} 
+                  onChange={e => setFilters(f => ({ ...f, price: e.target.value }))}
+                >
+                  <option value="">All Prices</option>
+                  <option value="low">Below ₹2000</option>
+                  <option value="high">₹2000 & Above</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </section>
+
+        {/* Results Count */}
+        <div className="mb-8 text-center">
+          <p className="text-gray-700 text-lg">
+            Showing <span className="font-bold text-[#F26A1B]">{filtered.length}</span> products
+          </p>
+        </div>
+
         {/* Artistic Divider */}
         <div className="w-full flex justify-center mb-10">
-          <div className="h-2 w-32 bg-gradient-to-r from-[#FFD700] via-[#F26A1B] to-[#FFD700] rounded-full shadow" />
+          <div className="h-1 w-32 bg-gradient-to-r from-[#FFD700] via-[#F26A1B] to-[#FFD700] rounded-full shadow" />
         </div>
+
         {/* Product Grid */}
         <section>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filtered.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-[#FFD700]/40 hover:scale-105 hover:shadow-2xl transition-transform duration-300 group relative w-full" style={{ aspectRatio: '3/4', minHeight: '320px', maxWidth: '320px', margin: '0 auto' }}>
-                <img src={item.img} alt={item.name} className="w-full h-56 object-cover group-hover:opacity-90" style={{ aspectRatio: '3/4', width: '100%', height: '260px', objectFit: 'cover' }} />
-                <div className="p-4 text-center">
-                  <span className="font-bold text-lg text-gray-900 group-hover:text-[#F26A1B] transition">{item.name}</span>
-                  <div className="text-md text-[#FFD700] font-semibold mt-1">₹{item.price}</div>
-                  <div className="flex items-center justify-center gap-2 mt-2">
-                    <input type="number" min="1" value={quantities[item.name] || 1} onChange={e => setQuantities(q => ({ ...q, [item.name]: parseInt(e.target.value) }))} className="w-16 px-2 py-1 border rounded" />
-                    <button onClick={() => addToCart(item, quantities[item.name] || 1)} className="inline-block bg-black text-[#FFD700] px-4 py-2 rounded-lg font-medium hover:bg-[#F26A1B] hover:text-white transition shadow">Add to Cart</button>
+          {filtered.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-gray-500 text-xl mb-4">No products found</div>
+              <p className="text-gray-400">Try adjusting your search or filter criteria</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filtered.map((item, idx) => (
+                <div key={idx} className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-[#FFD700]/40 hover:scale-105 hover:shadow-2xl transition-all duration-300 group">
+                  {/* Product Image */}
+                  <div className="aspect-square w-full overflow-hidden">
+                    <img 
+                      src={item.img} 
+                      alt={item.name} 
+                      className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300" 
+                      onError={(e) => {
+                        e.target.src = '/placeholder-image.jpg'; // Fallback image
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Product Details */}
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-[#F26A1B] transition-colors mb-2 line-clamp-2">
+                      {item.name}
+                    </h3>
+                    <div className="text-2xl text-[#F26A1B] font-bold mb-4">
+                      ₹{item.price.toLocaleString()}
+                    </div>
+                    
+                    {/* Quantity and Add to Cart */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center">
+                        <label className="text-sm text-gray-600 mr-2">Qty:</label>
+                        <input 
+                          type="number" 
+                          min="1" 
+                          max="10"
+                          value={quantities[item.name] || 1} 
+                          onChange={e => setQuantities(q => ({ ...q, [item.name]: Math.max(1, parseInt(e.target.value) || 1) }))} 
+                          className="w-16 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-[#F26A1B]" 
+                        />
+                      </div>
+                      <button 
+                        onClick={() => addToCart(item, quantities[item.name] || 1)} 
+                        className="flex-1 bg-black text-[#FFD700] px-4 py-2 rounded-lg font-semibold hover:bg-[#F26A1B] hover:text-white transition-colors shadow-md hover:shadow-lg"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>
   );
-} 
+}

@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Logo & Social */}
           <div className="flex flex-col items-center md:items-start">
-            <img src="/Logo.jpg" alt="Erimuga Logo" className="mb-2 h-10 w-10 object-contain rounded shadow" />
+            <img src="/Logo.jpg" alt="Erimuga Logo" className="mb-2 h-7 w-auto object-contain rounded shadow" />
             <span className="text-xl font-bold text-black mb-2" style={{ color: '#FFD700' }}>ERIMUGA</span>
             <div className="flex gap-4">
               <a href="https://www.facebook.com/erimuga" target="_blank" rel="noreferrer">
