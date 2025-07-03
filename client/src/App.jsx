@@ -3,9 +3,12 @@ import LandingPage from "./pages/LandingPage";
 import AboutUs from "./pages/AboutUs";
 import ApparelsPage from "./pages/ApparelsPage";
 import ProductsPage from "./pages/ProductsPage";
-import UserLogin from "./UserLogin";
 import Signup from "./pages/signup";
 import Login from "./pages/Login";
+import Cart from "./components/Cart";
+import Checkout from "./pages/Checkout"; // adjust path as needed
+
+
 
 function App() {
   return (
@@ -16,6 +19,8 @@ function App() {
       <Route path="/products" element={<ProductsPage />} />
       <Route path="/signup" element={<Signup />}></Route>
       <Route path="/login" element={<Login/>}></Route>
+      <Route path="/cart" element={<Cart/>}></Route>
+      <Route path="/checkout" element={<Checkout />} />
     </Routes>
   );
 }
