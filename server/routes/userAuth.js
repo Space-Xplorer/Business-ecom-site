@@ -45,6 +45,22 @@ router.post("/logout", (req, res) => {
   });
 });
 
+// === Google Auth ===
+router.get("/auth/google", passport.authenticate("user-google", {
+  scope: ["profile", "email"]
+}));
+
+router.get("/auth/google/callback",
+  passport.authenticate("user-google", {
+    failureRedirect: "http://localhost:5173/login",
+  }),
+  (req, res) => {
+    console.log("✅ Google login successful:", req.user);
+    res.redirect("http://localhost:5173/");
+  }
+);
+
+
 // === Check Auth Status ===
 router.get("/status", (req, res) => {
   if (req.isAuthenticated()) {
