@@ -42,6 +42,31 @@ const productImages = [
 export default function ProductsPage() {
   const { addToCart } = useCart();
   const [filters, setFilters] = useState({ subcategory: "", gender: "", price: "" });
+  const [quantities, setQuantities] = useState({});
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">Our Products</h2>
+          
+          {productImages.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {productImages.map((item, index) => (
+                <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
+                  {/* Product Image */}
+                  <div className="relative overflow-hidden">
+                    <img 
+                      src={item.img} 
+                      alt={item.name} 
+                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = '/placeholder-image.jpg';
+                      }}
                     />
                   </div>
                   
