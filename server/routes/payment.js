@@ -12,13 +12,13 @@ const razorpay = new Razorpay({
 
 // Create Razorpay Order
 router.post("/create-order", async (req, res) => {
-  const { amount } = req.body;
+  const { amount, orderId } = req.body;
 
   try {
     const options = {
       amount: amount * 100, // amount in paise
       currency: "INR",
-      receipt: "order_rcptid_" + Date.now(),
+      receipt: orderId || "order_rcptid_" + Date.now(),
     };
 
     const order = await razorpay.orders.create(options);
@@ -30,7 +30,7 @@ router.post("/create-order", async (req, res) => {
 
 // Verify payment (optional for security)
 router.post("/verify", (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -40,6 +40,21 @@ router.post("/verify", (req, res) => {
     .digest("hex");
 
   if (expectedSignature === razorpay_signature) {
+    // Update order payment status
+    if (orderId) {
+      const Order = require("../models/order");
+      Order.findOneAndUpdate(
+        { orderId },
+        { 
+          'payment.razorpayOrderId': razorpay_order_id,
+          'payment.razorpayPaymentId': razorpay_payment_id,
+          'payment.status': 'paid',
+          status: 'confirmed',
+          updatedAt: new Date()
+        }
+      ).catch(err => console.error("Error updating order:", err));
+    }
+    
     return res.status(200).json({ success: true, message: "Payment verified" });
   } else {
     return res.status(400).json({ success: false, message: "Invalid signature" });
