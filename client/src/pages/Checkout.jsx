@@ -2,11 +2,49 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../components/CartContext";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../components/CartContext";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
 export default function Checkout() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState({
+    street: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'India'
+  });
+  const { cartItems, getTotalAmount, clearCart } = useCart();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is authenticated
+    axios.get("http://localhost:8080/user/status", { withCredentials: true })
+      .then(res => {
+        if (res.data.isAuthenticated) {
+          setUser(res.data.user);
+        } else {
+          navigate('/login');
+        }
+      })
+      .catch(() => navigate('/login'));
+  }, [navigate]);
+
+  useEffect(() => {
+    // Redirect if cart is empty
+    if (cartItems.length === 0) {
+      navigate('/cart');
+    }
+  }, [cartItems, navigate]);
+
+  const totalAmount = getTotalAmount();
+  const shippingCost = totalAmount > 1000 ? 0 : 50; // Free shipping above ₹1000
+  const finalAmount = totalAmount + shippingCost;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({
@@ -69,6 +107,31 @@ export default function Checkout() {
       const { orderId } = orderResponse.data;
 
       // Create Razorpay order
+    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.postalCode) {
+      alert('Please fill in all shipping address fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Create order in backend first
+      const orderData = {
+        items: cartItems.map(item => ({
+          productName: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        shippingAddress,
+        totalAmount: finalAmount
+      };
+
+      const orderResponse = await axios.post("http://localhost:8080/api/orders/create", orderData, {
+        withCredentials: true
+      });
+
+      const { orderId } = orderResponse.data;
+
+      // Create Razorpay order
       const res = await axios.post("http://localhost:8080/api/payment/create-order", {
         amount: finalAmount,
         orderId
@@ -77,7 +140,7 @@ export default function Checkout() {
       const { id: order_id, amount: orderAmount } = res.data;
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_agHUCXSuZ9wOR8",
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_agHUCXSuZ9wOR8",
         amount: orderAmount,
         currency: "INR",
         name: "Erimuga E-Store",
