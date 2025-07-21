@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../components/CartContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../components/AuthContext";
 // import '../styles/Checkout.css';
 
 const Checkout = () => {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({
     street: '',
@@ -19,30 +20,18 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated
-    axios.get("http://localhost:8080/user/status", { withCredentials: true })
-      .then(res => {
-        if (res.data.isAuthenticated) {
-          setUser(res.data.user);
-        } else {
-          navigate('/login');
-        }
-      })
-      .catch(() => navigate('/login'));
-  }, [navigate]);
-
-  useEffect(() => {
-    // Redirect if cart is empty
+    if (!user) return;
     if (cartItems.length === 0) {
       navigate('/cart');
     }
-  }, [cartItems, navigate]);
+  }, [cartItems, navigate, user]);
 
   const totalAmount = getTotalAmount();
   const shippingCost = totalAmount > 1000 ? 0 : 50;
   const finalAmount = totalAmount + shippingCost;
 
   const handlePayment = async () => {
+    if (!user) return navigate('/login');
     if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.postalCode) {
       alert('Please fill in all shipping address fields');
       return;

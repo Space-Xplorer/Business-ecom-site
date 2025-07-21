@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import Carousel from "../components/Carousel";
+import { useAuth } from "../components/AuthContext";
 
 axios.defaults.withCredentials = true;
 
@@ -10,20 +11,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-
     try {
-      const res = await axios.post("http://localhost:8080/user/login", {
-        email,
-        password,
-      });
-
-      if (res.status === 200) {
-        navigate("/");
-      }
+      await login(email, password);
+      navigate("/");
     } catch (err) {
       setError(err?.response?.data?.message || "Login failed");
     }

@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaShoppingBag, FaUser, FaMapMarkerAlt } from "react-icons/fa";
+import { useAuth } from "../components/AuthContext";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
   const [form, setForm] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,25 +17,20 @@ export default function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8080/user/dashboard", { withCredentials: true })
-      .then(res => {
-        setUser(res.data.user);
-        setForm(res.data.user);
-        setLoading(false);
-        // Load user orders
-        return axios.get("http://localhost:8080/api/orders/my-orders", { withCredentials: true });
-      })
+    if (!user) return;
+    setForm(user);
+    axios.get("http://localhost:8080/api/orders/my-orders", { withCredentials: true })
       .then(res => {
         setOrders(res.data);
         setOrdersLoading(false);
-      })
-      .catch(err => {
-        setError("You must be logged in to view this page.");
         setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load orders.");
         setOrdersLoading(false);
-        setTimeout(() => navigate("/login"), 1500);
+        setLoading(false);
       });
-  }, [navigate]);
+  }, [user]);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -55,7 +51,7 @@ export default function Profile() {
     }
   };
 
-  if (loading) return <div className="text-center py-8">Loading profile...</div>;
+  if (!user) return <div className="text-center py-8">Loading profile...</div>;
   if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
 
   const getStatusColor = (status) => {

@@ -3,40 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaBars } from "react-icons/fa";
 import { useCart } from "./CartContext";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
 axios.defaults.withCredentials = true;
 
 export default function Header() {
-  const [user, setUser] = useState(null);
+  const { user, logout, checkAuth } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const { cartCount } = useCart();
   const navigate = useNavigate();
 
-  const checkAuth = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/user/status");
-      if (res.data.isAuthenticated) {
-        setUser(res.data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (err) {
-      console.error("Auth check failed", err);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      await axios.post("http://localhost:8080/user/logout");
-      setUser(null);
-      navigate("/");
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
-  };
-
   useEffect(() => {
     checkAuth();
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -62,7 +41,7 @@ export default function Header() {
             <>
               <Link to="/profile" className="text-black hover:text-[#F26A1B] transition">Profile</Link>
               <button
-                onClick={handleLogout}
+                onClick={logout}
                 className="text-black hover:text-red-500 transition bg-transparent border-none cursor-pointer"
               >
                 Logout
@@ -99,7 +78,7 @@ export default function Header() {
               <>
                 <Link to="/profile" className="py-2 text-black hover:text-[#F26A1B] w-full text-center" onClick={() => setMenuOpen(false)}>Profile</Link>
                 <button
-                  onClick={() => { setMenuOpen(false); handleLogout(); }}
+                  onClick={() => { setMenuOpen(false); logout(); }}
                   className="py-2 text-black hover:text-red-500 w-full text-center bg-transparent border-none cursor-pointer"
                 >
                   Logout
