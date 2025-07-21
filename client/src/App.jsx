@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Checkout from "./pages/Checkout";
 import Cart from "./components/Cart";
 import { AuthProvider, useAuth } from "./components/AuthContext";
+import ProductDetails from "./pages/ProductDetails";
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -31,6 +32,7 @@ function App() {
               <Route path="/about" element={<AboutUs />} />
               <Route path="/apparels" element={<ApparelsPage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/product/:name" element={<ProductDetails />} />
               <Route path="/signup" element={<Signup />}></Route>
               <Route path="/login" element={<Login/>}></Route>
               <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />

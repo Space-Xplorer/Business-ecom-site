@@ -59,22 +59,26 @@ export default function ProductsPage() {
               {productImages.map((item, index) => (
                 <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
                   {/* Product Image */}
-                  <div className="relative overflow-hidden">
-                    <img 
-                      src={item.img} 
-                      alt={item.name} 
-                      className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        e.target.src = '/placeholder-image.jpg';
-                      }}
-                    />
-                  </div>
+                  <Link to={`/product/${encodeURIComponent(item.name)}`}>
+                    <div className="relative overflow-hidden">
+                      <img 
+                        src={item.img} 
+                        alt={item.name} 
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = '/placeholder-image.jpg';
+                        }}
+                      />
+                    </div>
+                  </Link>
                   
                   {/* Product Details */}
                   <div className="p-6">
-                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-[#F26A1B] transition-colors mb-2 line-clamp-2">
-                      {item.name}
-                    </h3>
+                    <Link to={`/product/${encodeURIComponent(item.name)}`}>  
+                      <h3 className="font-bold text-lg text-gray-900 group-hover:text-[#F26A1B] transition-colors mb-2 line-clamp-2">
+                        {item.name}
+                      </h3>
+                    </Link>
                     <div className="text-2xl text-[#F26A1B] font-bold mb-4">
                       ₹{item.price.toLocaleString()}
                     </div>
