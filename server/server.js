@@ -27,8 +27,6 @@ const adminRoutes = require("./routes/adminAuth");
 const categoryRoutes = require("./routes/category");
 const carouselRoutes = require("./routes/carousel");
 const paymentRoutes = require("./routes/payment");
-const orderRoutes = require("./routes/orders");
-const adminOrderRoutes = require("./routes/adminOrders");
 
 // Connect DB
 const MONGO_URL = process.env.ECOMM_URL;
@@ -164,8 +162,9 @@ app.get("/admin/stats", isAdmin, async (req, res) => {
 });
 
 // Admin orders
-app.get("/admin/orders", isAdmin, async (req, res) => {
-  res.render("admin/orders");
+app.get("/admin/orders", async (req, res) => {
+  const orders = await Order.find().lean();
+  res.render("orders", { orders });
 });
 
 app.get("/admin/orders/:id", async (req, res) => {
@@ -180,8 +179,6 @@ app.use("/user", userRoutes);         // <-- Your React frontend will hit these
 app.use("/admin", adminRoutes);
 app.use(carouselRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/admin/api/orders", adminOrderRoutes);
 
 // === Error Handling
 app.use((req, res, next) => {
