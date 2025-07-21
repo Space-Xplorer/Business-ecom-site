@@ -47,7 +47,7 @@ const Checkout = () => {
         totalAmount: finalAmount,
       };
 
-      const orderRes = await axios.post('http://localhost:8080/api/orders', orderData, {
+      const orderRes = await axios.post('http://localhost:8080/api/orders/create', orderData, {
         withCredentials: true,
       });
 
@@ -57,7 +57,7 @@ const Checkout = () => {
       });
 
       const options = {
-        key: 'rzp_test_yourkey', // Replace with your Razorpay key
+        key: 'rzp_test_agHUCXSuZ9wOR8', // Replace with your Razorpay key
         amount: paymentRes.data.amount,
         currency: 'INR',
         name: 'Clothing Store',
@@ -108,78 +108,95 @@ const Checkout = () => {
   };
 
   return (
-    <div className="checkout-container">
-      <h2>Checkout</h2>
-      <div className="checkout-content">
-        <div className="address-form">
-          <h3>Shipping Address</h3>
-          <input
-            type="text"
-            placeholder="Street"
-            value={shippingAddress.street}
-            onChange={(e) =>
-              setShippingAddress({ ...shippingAddress, street: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="City"
-            value={shippingAddress.city}
-            onChange={(e) =>
-              setShippingAddress({ ...shippingAddress, city: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="State"
-            value={shippingAddress.state}
-            onChange={(e) =>
-              setShippingAddress({ ...shippingAddress, state: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Postal Code"
-            value={shippingAddress.postalCode}
-            onChange={(e) =>
-              setShippingAddress({
-                ...shippingAddress,
-                postalCode: e.target.value,
-              })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Country"
-            value={shippingAddress.country}
-            readOnly
-          />
-        </div>
-
-        <div className="order-summary">
-          <h3>Order Summary</h3>
-          {cartItems.map((item, index) => (
-            <div key={index} className="summary-item">
-              <p>{item.name} x {item.quantity}</p>
-              <p>₹{item.price * item.quantity}</p>
+    <div className="bg-gray-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-8">Checkout</h2>
+        <div className="bg-white shadow-lg rounded-lg md:grid md:grid-cols-2 md:gap-8 p-8">
+          <div className="address-form">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">Shipping Address</h3>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Street"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.street}
+                onChange={(e) =>
+                  setShippingAddress({ ...shippingAddress, street: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="City"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.city}
+                onChange={(e) =>
+                  setShippingAddress({ ...shippingAddress, city: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="State"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.state}
+                onChange={(e) =>
+                  setShippingAddress({ ...shippingAddress, state: e.target.value })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Postal Code"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.postalCode}
+                onChange={(e) =>
+                  setShippingAddress({
+                    ...shippingAddress,
+                    postalCode: e.target.value,
+                  })
+                }
+              />
+              <input
+                type="text"
+                placeholder="Country"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed"
+                value={shippingAddress.country}
+                readOnly
+              />
             </div>
-          ))}
-          <hr />
-          <div className="summary-item">
-            <strong>Subtotal:</strong>
-            <span>₹{totalAmount}</span>
           </div>
-          <div className="summary-item">
-            <strong>Shipping:</strong>
-            <span>₹{shippingCost}</span>
+
+          <div className="order-summary mt-8 md:mt-0">
+            <h3 className="text-xl font-semibold text-gray-800 mb-6">Order Summary</h3>
+            <div className="space-y-4">
+              {cartItems.map((item, index) => (
+                <div key={index} className="flex justify-between items-center text-gray-700">
+                  <p>{item.name} x {item.quantity}</p>
+                  <p>₹{item.price * item.quantity}</p>
+                </div>
+              ))}
+            </div>
+            <hr className="my-6 border-gray-200" />
+            <div className="space-y-2">
+              <div className="flex justify-between text-gray-800">
+                <strong>Subtotal:</strong>
+                <span>₹{totalAmount}</span>
+              </div>
+              <div className="flex justify-between text-gray-800">
+                <strong>Shipping:</strong>
+                <span>₹{shippingCost}</span>
+              </div>
+              <div className="flex justify-between text-gray-900 font-bold text-lg mt-2">
+                <strong>Total:</strong>
+                <span>₹{finalAmount}</span>
+              </div>
+            </div>
+            <button
+              className="w-full mt-8 bg-indigo-600 text-white font-semibold py-3 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              onClick={handlePayment}
+              disabled={loading}
+            >
+              {loading ? 'Processing...' : 'Pay Now'}
+            </button>
           </div>
-          <div className="summary-item total">
-            <strong>Total:</strong>
-            <span>₹{finalAmount}</span>
-          </div>
-          <button className="checkout-btn" onClick={handlePayment} disabled={loading}>
-            {loading ? 'Processing...' : 'Pay Now'}
-          </button>
         </div>
       </div>
     </div>

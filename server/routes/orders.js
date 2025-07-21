@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Order = require("../models/order");
 const User = require("../models/user");
+const Product= require("../models/product")
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
@@ -12,44 +13,74 @@ const isAuthenticated = (req, res, next) => {
 };
 
 // Create new order
-router.post("/create", isAuthenticated, async (req, res) => {
+// router.post("/create", isAuthenticated, async (req, res) => {
+//   try {
+//     const { items, shippingAddress, totalAmount, notes } = req.body;
+    
+//     if (!items || items.length === 0) {
+//       return res.status(400).json({ message: "Order must contain at least one item" });
+//     }
+
+//     if (!shippingAddress || !shippingAddress.street || !shippingAddress.city) {
+//       return res.status(400).json({ message: "Complete shipping address is required" });
+//     }
+
+//     const order = new Order({
+//       userId: req.user._id,
+//       items: items.map(item => ({
+//         productName: item.productName,
+//         quantity: item.quantity,
+//         price: item.price
+//       })),
+//       shippingAddress,
+//       totalAmount,
+//       notes,
+//       payment: {
+//         amount: totalAmount,
+//         status: 'pending'
+//       }
+//     });
+
+//     await order.save();
+    
+//     res.status(201).json({ 
+//       message: "Order created successfully", 
+//       orderId: order.orderId,
+//       order 
+//     });
+//   } catch (error) {
+//     console.error("Error creating order:", error);
+//     res.status(500).json({ message: "Failed to create order", error: error.message });
+//   }
+// });
+
+router.post('/create', async (req, res) => {
   try {
-    const { items, shippingAddress, totalAmount, notes } = req.body;
-    
-    if (!items || items.length === 0) {
-      return res.status(400).json({ message: "Order must contain at least one item" });
-    }
+    const { userId, items, totalAmount, shippingAddress } = req.body;
 
-    if (!shippingAddress || !shippingAddress.street || !shippingAddress.city) {
-      return res.status(400).json({ message: "Complete shipping address is required" });
-    }
+    // Populate product details like name and price from DB
+    const populatedItems = await Promise.all(items.map(async (item) => {
+      const product = await Product.findById(item.productId);
+      return {
+        productId: item.productId,
+        productName: product.name,
+        productPrice: product.price,
+        quantity: item.quantity
+      };
+    }));
 
-    const order = new Order({
-      userId: req.user._id,
-      items: items.map(item => ({
-        productName: item.productName,
-        quantity: item.quantity,
-        price: item.price
-      })),
-      shippingAddress,
+    const newOrder = new Order({
+      userId,
+      items: populatedItems,
       totalAmount,
-      notes,
-      payment: {
-        amount: totalAmount,
-        status: 'pending'
-      }
+      shippingAddress
     });
 
-    await order.save();
-    
-    res.status(201).json({ 
-      message: "Order created successfully", 
-      orderId: order.orderId,
-      order 
-    });
+    await newOrder.save();
+    res.status(201).json({ message: 'Order placed successfully', order: newOrder });
   } catch (error) {
     console.error("Error creating order:", error);
-    res.status(500).json({ message: "Failed to create order", error: error.message });
+    res.status(500).json({ message: 'Error creating order', error });
   }
 });
 
