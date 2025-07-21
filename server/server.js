@@ -27,6 +27,7 @@ const adminRoutes = require("./routes/adminAuth");
 const categoryRoutes = require("./routes/category");
 const carouselRoutes = require("./routes/carousel");
 const paymentRoutes = require("./routes/payment");
+const orderRoutes= require("./routes/orders")
 
 // Connect DB
 const MONGO_URL = process.env.ECOMM_URL;
@@ -179,6 +180,7 @@ app.use("/user", userRoutes);         // <-- Your React frontend will hit these
 app.use("/admin", adminRoutes);
 app.use(carouselRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/orders", orderRoutes)
 
 // === Error Handling
 app.use((req, res, next) => {
