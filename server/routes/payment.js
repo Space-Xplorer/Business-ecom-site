@@ -61,4 +61,19 @@ router.post("/verify", (req, res) => {
   }
 });
 
+router.post("/orders", async (req, res) => {
+  const { amount, orderId } = req.body;
+  try {
+    const options = {
+      amount: amount, // already in paise from frontend
+      currency: "INR",
+      receipt: orderId || "order_rcptid_" + Date.now(),
+    };
+    const order = await razorpay.orders.create(options);
+    res.status(200).json(order);
+  } catch (err) {
+    res.status(500).json({ message: "Order creation failed", error: err });
+  }
+});
+
 module.exports = router;

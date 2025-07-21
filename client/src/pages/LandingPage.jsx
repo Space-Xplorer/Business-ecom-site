@@ -16,20 +16,6 @@ const deals = [
 ];
 
 export default function LandingPage() {
-  // Example: Fetch new arrivals from backend
-  // useEffect(() => {
-  //   fetch('http://localhost:8080/api/products/new-arrivals')
-  //     .then(res => res.json())
-  //     .then(data => setNewArrivals(data));
-  // }, []);
-
-  // Example: Fetch deals from backend
-  // useEffect(() => {
-  //   fetch('http://localhost:8080/api/products/deals')
-  //     .then(res => res.json())
-  //     .then(data => setDeals(data));
-  // }, []);
-
   return (
     <>
       <Header />
@@ -49,7 +35,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {newArrivals.map((item, i) => (
               <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-[#FFD700]/40 hover:scale-105 hover:shadow-2xl transition-transform duration-300 group relative">
-                <img src={item.img} alt={item.name} className="w-full h-48 object-cover group-hover:opacity-90" />
+                <img src={item.img} alt={item.name} className="w-full h-48 object-cover group-hover:opacity-90" loading="lazy" />
                 <div className="p-3 text-center">
                   <span className="font-semibold text-gray-800 text-lg group-hover:text-[#F26A1B] transition">{item.name}</span>
                 </div>
@@ -57,8 +43,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          {/* Example: Map over newArrivals from backend */}
-          {/* newArrivals.map(product => ( ... )) */}
         </section>
 
         {/* Deals Section */}
@@ -67,7 +51,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {deals.map((item, i) => (
               <div key={i} className="relative rounded-xl overflow-hidden shadow-lg border-2 border-[#FFD700]/40 hover:scale-105 hover:shadow-2xl transition-transform duration-300 group">
-                <img src={item.img} alt={item.name} className="w-full h-56 object-cover group-hover:opacity-90" />
+                <img src={item.img} alt={item.name} className="w-full h-56 object-cover group-hover:opacity-90" loading="lazy" />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-10">
                   <span className="text-lg font-bold text-[#FFD700] drop-shadow">{item.name}</span>
                   <p className="text-white text-sm">Save up to 30% on select Assamese textiles!</p>
@@ -75,8 +59,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          {/* Example: Map over deals from backend */}
-          {/* deals.map(deal => ( ... )) */}
         </section>
 
         {/* What We Offer Section */}

@@ -17,6 +17,8 @@ const Product = require("./models/product");
 const Admin = require("./models/admin");
 const generateProductCode = require("./utils/generateProductCode");
 const { validateProduct, isAdmin } = require("./middlewares");
+const productsApiRoutes = require("./routes/products");
+const addressRoutes = require("./routes/address");
 
 // Passport config
 require("./passport-config");
@@ -32,7 +34,6 @@ const orderRoutes= require("./routes/orders")
 // Connect DB
 const MONGO_URL = process.env.ECOMM_URL;
 mongoose.connect(MONGO_URL)
-  .then(() => console.log("MongoDB connected successfully"))
   .catch(err => console.error(err));
 
 // CORS — placed early
@@ -181,6 +182,8 @@ app.use("/admin", adminRoutes);
 app.use(carouselRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes)
+app.use(productsApiRoutes);
+app.use("/api/addresses", addressRoutes);
 
 // === Error Handling
 app.use((req, res, next) => {
@@ -193,6 +196,4 @@ app.use((err, req, res, next) => {
 });
 
 // === Start Server
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+app.listen(port);

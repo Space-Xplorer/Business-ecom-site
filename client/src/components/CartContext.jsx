@@ -60,7 +60,8 @@ export const CartProvider = ({ children }) => {
         );
       } else {
         const newItem = {
-          id: product.id || product.name,
+          id: product.id || product._id || product.name,
+          productId: product._id || product.id || undefined,
           name: product.name,
           price: product.price,
           img: product.img,

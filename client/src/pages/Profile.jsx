@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaShoppingBag, FaUser, FaMapMarkerAlt } from "react-icons/fa";
@@ -14,6 +14,10 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
+  const [showMessage, setShowMessage] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("success");
+  const topRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,6 +36,10 @@ export default function Profile() {
       });
   }, [user]);
 
+  useEffect(() => {
+    if (topRef.current) topRef.current.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -44,8 +52,15 @@ export default function Profile() {
       setUser(res.data.user);
       setForm(res.data.user);
       setEditMode(false);
+      setMessage("Profile updated successfully!");
+      setMessageType("success");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 1500);
     } catch (err) {
-      setError("Failed to update profile.");
+      setMessage("Failed to update profile.");
+      setMessageType("error");
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 1500);
     } finally {
       setSaving(false);
     }
@@ -67,6 +82,12 @@ export default function Profile() {
   };
   return (
     <div className="max-w-6xl mx-auto mt-8 p-6">
+      <div ref={topRef}></div>
+      {showMessage && (
+        <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg transition-opacity duration-500 opacity-100 animate-fade-in-out ${messageType === 'success' ? 'bg-black text-[#FFD700]' : 'bg-red-600 text-white'}`}>
+          {message}
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-8 text-[#F26A1B] text-center">My Account</h1>
       
       {/* Tab Navigation */}

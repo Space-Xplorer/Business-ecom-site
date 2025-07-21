@@ -43,7 +43,7 @@ export default function Signup() {
           </div>
           <button type="submit" className="w-full bg-black text-[#FFD700] py-2 rounded-lg font-bold hover:bg-[#F26A1B] hover:text-white transition">Sign Up</button>
           <a href="http://localhost:8080/user/auth/google" className="w-full flex items-center justify-center gap-2 mt-2 bg-white border border-gray-300 text-gray-700 py-2 rounded-lg font-bold hover:bg-[#F26A1B] hover:text-white transition shadow">
-            <img src="/google-icon.svg" alt="Google" className="h-5 w-5" />
+            <img src="/google-icon.svg" alt="Google" className="h-5 w-5" loading="lazy" />
             Sign up with Google
           </a>
         </form>

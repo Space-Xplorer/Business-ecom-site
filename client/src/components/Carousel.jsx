@@ -15,7 +15,6 @@ export default function Carousel() {
         const response = await fetch('http://localhost:8080/api/carousel');
         if (!response.ok) throw new Error('Failed to fetch slides');
         const data = await response.json();
-        console.log("Fetched slides data:", data);
         setSlides(data);
       } catch (err) {
         setError(err.message);
@@ -66,6 +65,7 @@ export default function Carousel() {
                   src={slide.imageUrl}
                   alt={slide.altText || slide.title || 'Erimuga Carousel Slide'}
                   className="w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] object-cover"
+                  loading="lazy"
                 />
                 {/* Overlay title at bottom center */}
                 {slide.title && (
@@ -79,7 +79,7 @@ export default function Carousel() {
         ))}
       </Slider>
       
-      <style jsx>{`
+      <style>{`
         .carousel-container .slick-dots {
           bottom: -50px;
         }

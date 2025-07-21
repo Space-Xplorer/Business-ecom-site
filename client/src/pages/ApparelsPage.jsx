@@ -5,13 +5,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 export default function ApparelsPage() {
-  // Example: Fetch apparels from backend
-  // useEffect(() => {
-  //   fetch('http://localhost:8080/api/apparels')
-  //     .then(res => res.json())
-  //     .then(data => setApparels(data));
-  // }, []);
-
   // Placeholder data
   const featured = [
     { id: 1, name: "Muga Silk Saree", price: 4999, img: "https://source.unsplash.com/600x400/?saree,assam,1" },
@@ -57,7 +50,7 @@ export default function ApparelsPage() {
             {featured.map(item => (
               <div key={item.id} className="px-4">
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-[#FFD700]/40 hover:scale-105 hover:shadow-2xl transition-transform duration-300 group relative">
-                  <img src={item.img} alt={item.name} className="w-full h-72 object-cover group-hover:opacity-90" />
+                  <img src={item.img} alt={item.name} className="w-full h-72 object-cover group-hover:opacity-90" loading="lazy" />
                   <div className="p-6 text-center">
                     <span className="font-bold text-xl text-gray-900 group-hover:text-[#F26A1B] transition">{item.name}</span>
                     <div className="text-lg text-[#FFD700] font-semibold mt-2">₹{item.price}</div>
@@ -80,7 +73,7 @@ export default function ApparelsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {apparels.map(item => (
               <div key={item.id} className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-[#FFD700]/40 hover:scale-105 hover:shadow-2xl transition-transform duration-300 group relative">
-                <img src={item.img} alt={item.name} className="w-full h-56 object-cover group-hover:opacity-90" />
+                <img src={item.img} alt={item.name} className="w-full h-56 object-cover group-hover:opacity-90" loading="lazy" />
                 <div className="p-4 text-center">
                   <span className="font-bold text-lg text-gray-900 group-hover:text-[#F26A1B] transition">{item.name}</span>
                   <div className="text-md text-[#FFD700] font-semibold mt-1">₹{item.price}</div>
