@@ -1,0 +1,384 @@
+<% layout("/layouts/boilerplate") -%>
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h3 fw-bold">Order Management</h1>
+      <div class="d-flex gap-2">
+        <select id="statusFilter" class="form-select" style="width: auto;">
+          <option value="all">All Orders</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="processing">Processing</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <button class="btn btn-primary" onclick="refreshOrders()">
+          <i class="fas fa-refresh"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Order Statistics Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-2">
+        <div class="card text-center border-primary">
+          <div class="card-body py-3">
+            <h6 class="card-title text-primary mb-1">Total</h6>
+            <h4 class="mb-0" id="totalOrders">-</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-center border-warning">
+          <div class="card-body py-3">
+            <h6 class="card-title text-warning mb-1">Pending</h6>
+            <h4 class="mb-0" id="pendingOrders">-</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-center border-info">
+          <div class="card-body py-3">
+            <h6 class="card-title text-info mb-1">Confirmed</h6>
+            <h4 class="mb-0" id="confirmedOrders">-</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-center border-secondary">
+          <div class="card-body py-3">
+            <h6 class="card-title text-secondary mb-1">Processing</h6>
+            <h4 class="mb-0" id="processingOrders">-</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-center border-success">
+          <div class="card-body py-3">
+            <h6 class="card-title text-success mb-1">Delivered</h6>
+            <h4 class="mb-0" id="deliveredOrders">-</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="card text-center border-danger">
+          <div class="card-body py-3">
+            <h6 class="card-title text-danger mb-1">Cancelled</h6>
+            <h4 class="mb-0" id="cancelledOrders">-</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="mb-0">Orders</h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0 table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr>
+              <td colspan="8" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div id="paginationInfo">-</div>
+        <nav>
+          <ul class="pagination mb-0" id="pagination">
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details Modal -->
+  <div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Order Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="orderModalBody">
+          <!-- Order details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentPage = 1;
+    let currentStatus = 'all';
+
+    // Load orders on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadOrderStats();
+      loadOrders();
+      
+      // Status filter change
+      document.getElementById('statusFilter').addEventListener('change', function() {
+        currentStatus = this.value;
+        currentPage = 1;
+        loadOrders();
+      });
+    });
+
+    async function loadOrderStats() {
+      try {
+        const response = await fetch('/admin/api/orders/stats');
+        const stats = await response.json();
+        
+        document.getElementById('totalOrders').textContent = stats.totalOrders;
+        document.getElementById('pendingOrders').textContent = stats.pendingOrders;
+        document.getElementById('confirmedOrders').textContent = stats.confirmedOrders;
+        document.getElementById('processingOrders').textContent = stats.processingOrders;
+        document.getElementById('deliveredOrders').textContent = stats.deliveredOrders;
+        document.getElementById('cancelledOrders').textContent = stats.cancelledOrders;
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+
+    async function loadOrders(page = 1) {
+      try {
+        const response = await fetch(`/admin/api/orders?page=${page}&status=${currentStatus}`);
+        const data = await response.json();
+        
+        renderOrdersTable(data.orders);
+        renderPagination(data.pagination);
+        currentPage = page;
+      } catch (error) {
+        console.error('Error loading orders:', error);
+        document.getElementById('ordersTableBody').innerHTML = 
+          '<tr><td colspan="8" class="text-center text-danger">Error loading orders</td></tr>';
+      }
+    }
+
+    function renderOrdersTable(orders) {
+      const tbody = document.getElementById('ordersTableBody');
+      
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No orders found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = orders.map(order => `
+        <tr>
+          <td>
+            <a href="#" onclick="viewOrder('${order.orderId}')" class="text-decoration-none">
+              ${order.orderId}
+            </a>
+          </td>
+          <td>
+            <div>
+              <strong>${order.userId?.firstName || ''} ${order.userId?.lastName || ''}</strong>
+              <br><small class="text-muted">${order.userId?.email || ''}</small>
+            </div>
+          </td>
+          <td>${order.items.length} item(s)</td>
+          <td>₹${order.totalAmount}</td>
+          <td>
+            <select class="form-select form-select-sm" onchange="updateOrderStatus('${order.orderId}', this.value)">
+              <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+              <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+              <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
+              <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+          </td>
+          <td>
+            <span class="badge ${order.payment.status === 'paid' ? 'bg-success' : 'bg-warning'}">
+              ${order.payment.status}
+            </span>
+          </td>
+          <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" onclick="viewOrder('${order.orderId}')">
+              View
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPagination(pagination) {
+      const paginationInfo = document.getElementById('paginationInfo');
+      const paginationNav = document.getElementById('pagination');
+      
+      paginationInfo.textContent = `Showing page ${pagination.currentPage} of ${pagination.totalPages} (${pagination.totalOrders} total orders)`;
+      
+      let paginationHTML = '';
+      
+      if (pagination.hasPrev) {
+        paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadOrders(${pagination.currentPage - 1})">Previous</a></li>`;
+      }
+      
+      for (let i = Math.max(1, pagination.currentPage - 2); i <= Math.min(pagination.totalPages, pagination.currentPage + 2); i++) {
+        paginationHTML += `<li class="page-item ${i === pagination.currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" onclick="loadOrders(${i})">${i}</a>
+        </li>`;
+      }
+      
+      if (pagination.hasNext) {
+        paginationHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadOrders(${pagination.currentPage + 1})">Next</a></li>`;
+      }
+      
+      paginationNav.innerHTML = paginationHTML;
+    }
+
+    async function viewOrder(orderId) {
+      try {
+        const response = await fetch(`/admin/api/orders/${orderId}`);
+        const order = await response.json();
+        
+        const modalBody = document.getElementById('orderModalBody');
+        modalBody.innerHTML = `
+          <div class="row">
+            <div class="col-md-6">
+              <h6>Order Information</h6>
+              <p><strong>Order ID:</strong> ${order.orderId}</p>
+              <p><strong>Status:</strong> <span class="badge bg-secondary">${order.status}</span></p>
+              <p><strong>Total Amount:</strong> ₹${order.totalAmount}</p>
+              <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+              
+              <h6 class="mt-3">Customer Information</h6>
+              <p><strong>Name:</strong> ${order.userId?.firstName || ''} ${order.userId?.lastName || ''}</p>
+              <p><strong>Email:</strong> ${order.userId?.email || ''}</p>
+              <p><strong>Phone:</strong> ${order.userId?.phone || 'Not provided'}</p>
+            </div>
+            <div class="col-md-6">
+              <h6>Shipping Address</h6>
+              <p>
+                ${order.shippingAddress.street}<br>
+                ${order.shippingAddress.city}, ${order.shippingAddress.state}<br>
+                ${order.shippingAddress.postalCode}<br>
+                ${order.shippingAddress.country}
+              </p>
+              
+              <h6 class="mt-3">Payment Information</h6>
+              <p><strong>Status:</strong> <span class="badge ${order.payment.status === 'paid' ? 'bg-success' : 'bg-warning'}">${order.payment.status}</span></p>
+              <p><strong>Amount:</strong> ₹${order.payment.amount}</p>
+              ${order.payment.razorpayPaymentId ? `<p><strong>Payment ID:</strong> ${order.payment.razorpayPaymentId}</p>` : ''}
+            </div>
+          </div>
+          
+          <h6 class="mt-3">Order Items</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${order.items.map(item => `
+                  <tr>
+                    <td>${item.productName}</td>
+                    <td>${item.quantity}</td>
+                    <td>₹${item.price}</td>
+                    <td>₹${item.price * item.quantity}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          
+          ${order.notes ? `
+            <h6 class="mt-3">Notes</h6>
+            <p>${order.notes}</p>
+          ` : ''}
+          
+          <div class="mt-3">
+            <label for="orderNotes" class="form-label">Add/Update Notes:</label>
+            <textarea class="form-control" id="orderNotes" rows="3" placeholder="Add notes about this order...">${order.notes || ''}</textarea>
+            <button class="btn btn-sm btn-primary mt-2" onclick="updateOrderNotes('${order.orderId}')">Save Notes</button>
+          </div>
+        `;
+        
+        new bootstrap.Modal(document.getElementById('orderModal')).show();
+      } catch (error) {
+        console.error('Error loading order details:', error);
+        alert('Error loading order details');
+      }
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        const response = await fetch(`/admin/api/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (response.ok) {
+          loadOrders(currentPage);
+          loadOrderStats();
+        } else {
+          alert('Error updating order status');
+        }
+      } catch (error) {
+        console.error('Error updating order status:', error);
+        alert('Error updating order status');
+      }
+    }
+
+    async function updateOrderNotes(orderId) {
+      const notes = document.getElementById('orderNotes').value;
+      
+      try {
+        const response = await fetch(`/admin/api/orders/${orderId}/notes`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ notes })
+        });
+        
+        if (response.ok) {
+          alert('Notes updated successfully');
+        } else {
+          alert('Error updating notes');
+        }
+      } catch (error) {
+        console.error('Error updating notes:', error);
+        alert('Error updating notes');
+      }
+    }
+
+    function refreshOrders() {
+      loadOrderStats();
+      loadOrders(currentPage);
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>

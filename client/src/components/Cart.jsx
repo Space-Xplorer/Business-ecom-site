@@ -1,33 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FaShoppingCart } from 'react-icons/fa';
-
-// Placeholder: In the future, cartItems should come from context or props, not hardcoded
-const getInitialCart = () => {
-  try {
-    const stored = localStorage.getItem('cartItems');
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
+import { useCart } from './CartContext';
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(getInitialCart());
   const [user, setUser] = useState(null);
-
-  // Listen for cart updates from anywhere in the app
-  useEffect(() => {
-    const handleCartUpdate = () => {
-      setCartItems(getInitialCart());
-    };
-    window.addEventListener('cartUpdated', handleCartUpdate);
-    return () => window.removeEventListener('cartUpdated', handleCartUpdate);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
+  const { cartItems, updateQuantity, removeFromCart, getTotalAmount } = useCart();
 
   useEffect(() => {
     fetch('http://localhost:8080/user/status', { credentials: 'include' })
@@ -35,29 +13,14 @@ const Cart = () => {
       .then(data => setUser(data.isAuthenticated ? data.user : null));
   }, []);
 
-  const updateQuantity = (id, delta) => {
-    setCartItems(prev => {
-      const updated = prev.map(item =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      );
-      localStorage.setItem('cartItems', JSON.stringify(updated));
-      window.dispatchEvent(new Event('cartUpdated'));
-      return updated;
-    });
+  const handleQuantityChange = (id, delta) => {
+    const item = cartItems.find(item => item.id === id);
+    if (item) {
+      updateQuantity(id, item.quantity + delta);
+    }
   };
 
-  const removeItem = (id) => {
-    setCartItems(prev => {
-      const updated = prev.filter(item => item.id !== id);
-      localStorage.setItem('cartItems', JSON.stringify(updated));
-      window.dispatchEvent(new Event('cartUpdated'));
-      return updated;
-    });
-  };
-
-  const totalAmount = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const totalAmount = getTotalAmount();
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white rounded shadow mt-8">
@@ -82,10 +45,10 @@ const Cart = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <button onClick={() => updateQuantity(item.id || item.name, -1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
+                <button onClick={() => handleQuantityChange(item.id || item.name, -1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
                 <span>{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.id || item.name, 1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
-                <button onClick={() => removeItem(item.id || item.name)} className="ml-4 text-red-500 hover:underline">Remove</button>
+                <button onClick={() => handleQuantityChange(item.id || item.name, 1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
+                <button onClick={() => removeFromCart(item.id || item.name)} className="ml-4 text-red-500 hover:underline">Remove</button>
               </div>
             </div>
           ))}

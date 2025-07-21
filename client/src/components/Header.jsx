@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaBars } from "react-icons/fa";
+import { useCart } from "./CartContext";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
@@ -8,6 +9,7 @@ axios.defaults.withCredentials = true;
 export default function Header() {
   const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { cartCount } = useCart();
   const navigate = useNavigate();
 
   const checkAuth = async () => {
@@ -71,6 +73,11 @@ export default function Header() {
         {/* Cart Icon (always visible, rightmost) */}
         <Link to="/cart" className="ml-4 text-black hover:text-[#F26A1B] transition relative flex items-center">
           <FaShoppingCart size={26} />
+          {cartCount > 0 && (
+            <span className="absolute -top-2 -right-2 bg-[#F26A1B] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+              {cartCount > 99 ? '99+' : cartCount}
+            </span>
+          )}
         </Link>
         {/* Hamburger for mobile */}
         <button className="md:hidden ml-4" onClick={() => setMenuOpen(!menuOpen)}>
