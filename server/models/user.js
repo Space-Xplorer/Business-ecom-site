@@ -29,12 +29,6 @@ const userSchema = new Schema(
       enum: ["customer", "admin"],
       default: "customer",
     },
-    addresses: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Address",
-      },
-    ],
   },
   {
     timestamps: true, // adds createdAt and updatedAt automatically

@@ -86,6 +86,8 @@ app.use((req, res, next) => {
 
 app.get("/", (req, res) => res.redirect("/admin/dashboard"));
 
+=======
+>>>>>>> b901964f88c63b143e17dd530da6e2e7ae75563b
 // === All routers
 app.use("/", categoryRoutes);
 app.use("/admin", adminRoutes);

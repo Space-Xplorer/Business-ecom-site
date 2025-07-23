@@ -8,10 +8,6 @@ import { useAuth } from "../components/AuthContext";
 const Checkout = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [addresses, setAddresses] = useState([]);
-  const [selectedAddressId, setSelectedAddressId] = useState('');
-  const [showNewAddress, setShowNewAddress] = useState(false);
-  const [saveNewAddress, setSaveNewAddress] = useState(true);
   const [shippingAddress, setShippingAddress] = useState({
     street: '',
     city: '',
@@ -22,6 +18,7 @@ const Checkout = () => {
   const [showMessage, setShowMessage] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success"); // or "error"
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const topRef = useRef(null);
 
   const { cartItems, getTotalAmount, clearCart } = useCart();
@@ -32,10 +29,6 @@ const Checkout = () => {
     if (cartItems.length === 0) {
       navigate('/cart');
     }
-    // Fetch addresses
-    axios.get('http://localhost:8080/api/addresses', { withCredentials: true })
-      .then(res => setAddresses(res.data))
-      .catch(() => setAddresses([]));
   }, [cartItems, navigate, user]);
 
   useEffect(() => {
@@ -48,40 +41,50 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     if (!user) return navigate('/login');
-    let addressToUse = shippingAddress;
-    // Use selected address if not adding new
-    if (!showNewAddress && selectedAddressId) {
-      const found = addresses.find(addr => addr._id === selectedAddressId);
-      if (found) addressToUse = found;
-    }
-    // Validate address
+    const addressToUse = shippingAddress;
     if (!addressToUse.street || !addressToUse.city || !addressToUse.state || !addressToUse.postalCode) {
       alert('Please fill in all shipping address fields');
       return;
     }
     setLoading(true);
     try {
-      // Save new address if needed
-      if (showNewAddress && saveNewAddress) {
-        await axios.post('http://localhost:8080/api/addresses', addressToUse, { withCredentials: true });
-      }
-      // Create order in backend
-      const orderData = {
-        userId: user._id,
-        items: cartItems.map(item => ({
+      let itemsToOrder = [];
+      if (user) {
+        // Always fetch latest cart from server
+        const cartRes = await axios.get('http://localhost:8080/api/orders/cart', { withCredentials: true });
+        itemsToOrder = (cartRes.data.items || []).map(item => ({
+          productId: item.productId._id || item.productId,
+          quantity: item.quantity
+        }));
+      } else {
+        // fallback, should not happen
+        itemsToOrder = cartItems.map(item => ({
           productId: item.productId || item.id,
           quantity: item.quantity
-        })),
+        }));
+      }
+      const orderData = {
+        userId: user._id,
+        items: itemsToOrder,
         shippingAddress: addressToUse,
         totalAmount: finalAmount,
+        payment: { method: paymentMethod }
       };
-      const orderRes = await axios.post('http://localhost:8080/api/orders/create', orderData, {
-        withCredentials: true,
-      });
-      // Initiate Razorpay checkout
-      const paymentRes = await axios.post('http://localhost:8080/api/payment/orders', {
-        amount: finalAmount * 100,
-      });
+      if (paymentMethod === 'cod') {
+        await axios.post('http://localhost:8080/api/orders/create', orderData, { withCredentials: true });
+        setMessage('Order placed! Pay on delivery.');
+        setMessageType('success');
+        setShowMessage(true);
+        clearCart();
+        setTimeout(() => {
+          setShowMessage(false);
+          navigate('/orders');
+        }, 1500);
+        return;
+      }
+      // Razorpay flow
+      const orderRes = await axios.post('http://localhost:8080/api/orders/create', orderData, { withCredentials: true });
+      const paymentRes = await axios.post('http://localhost:8080/api/payment/orders', { amount: finalAmount * 100 });
       const options = {
         key: 'rzp_test_agHUCXSuZ9wOR8',
         amount: paymentRes.data.amount,
@@ -154,81 +157,43 @@ const Checkout = () => {
         <div className="bg-white shadow-lg rounded-lg md:grid md:grid-cols-2 md:gap-8 p-8">
           <div className="address-form">
             <h3 className="text-xl font-semibold text-gray-800 mb-6">Shipping Address</h3>
-            {addresses.length > 0 && !showNewAddress && (
-              <div className="mb-4 space-y-2">
-                {addresses.map(addr => (
-                  <label key={addr._id} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="address"
-                      value={addr._id}
-                      checked={selectedAddressId === addr._id}
-                      onChange={() => setSelectedAddressId(addr._id)}
-                    />
-                    <span>{addr.street}, {addr.city}, {addr.state}, {addr.postalCode}, {addr.country}</span>
-                  </label>
-                ))}
-                <button
-                  className="mt-2 text-sm text-blue-600 underline"
-                  onClick={() => { setShowNewAddress(true); setSelectedAddressId(''); }}
-                  type="button"
-                >Add New Address</button>
-              </div>
-            )}
-            {((addresses.length === 0) || showNewAddress) && (
-              <div className="space-y-4 border-t pt-4">
-                <input
-                  type="text"
-                  placeholder="Street"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={shippingAddress.street}
-                  onChange={e => setShippingAddress({ ...shippingAddress, street: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="City"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={shippingAddress.city}
-                  onChange={e => setShippingAddress({ ...shippingAddress, city: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="State"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={shippingAddress.state}
-                  onChange={e => setShippingAddress({ ...shippingAddress, state: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="Postal Code"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={shippingAddress.postalCode}
-                  onChange={e => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="Country"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed"
-                  value={shippingAddress.country}
-                  readOnly
-                />
-                <label className="flex items-center gap-2 mt-2">
-                  <input
-                    type="checkbox"
-                    checked={saveNewAddress}
-                    onChange={e => setSaveNewAddress(e.target.checked)}
-                  />
-                  <span>Save this address for future use</span>
-                </label>
-                {addresses.length > 0 && (
-                  <button
-                    className="text-sm text-blue-600 underline"
-                    onClick={() => setShowNewAddress(false)}
-                    type="button"
-                  >Back to Saved Addresses</button>
-                )}
-              </div>
-            )}
+            <div className="space-y-4 border-t pt-4">
+              <input
+                type="text"
+                placeholder="Street"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.street}
+                onChange={e => setShippingAddress({ ...shippingAddress, street: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="City"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.city}
+                onChange={e => setShippingAddress({ ...shippingAddress, city: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="State"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.state}
+                onChange={e => setShippingAddress({ ...shippingAddress, state: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Postal Code"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={shippingAddress.postalCode}
+                onChange={e => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
+              />
+              <input
+                type="text"
+                placeholder="Country"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed"
+                value={shippingAddress.country}
+                readOnly
+              />
+            </div>
           </div>
           <div className="order-summary mt-8 md:mt-0">
             <h3 className="text-xl font-semibold text-gray-800 mb-6">Order Summary</h3>
@@ -255,12 +220,35 @@ const Checkout = () => {
                 <span>₹{finalAmount}</span>
               </div>
             </div>
+            <div className="mt-6 mb-2">
+              <label className="block mb-2 font-medium">Select Payment Method:</label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="cod"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                  />
+                  Cash on Delivery
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    value="razorpay"
+                    checked={paymentMethod === 'razorpay'}
+                    onChange={() => setPaymentMethod('razorpay')}
+                  />
+                  Online Payment (Razorpay)
+                </label>
+              </div>
+            </div>
             <button
               className="w-full mt-8 bg-indigo-600 text-white font-semibold py-3 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
               onClick={handlePayment}
               disabled={loading}
             >
-              {loading ? 'Processing...' : 'Pay Now'}
+              {loading ? 'Processing...' : 'Place Order'}
             </button>
           </div>
         </div>

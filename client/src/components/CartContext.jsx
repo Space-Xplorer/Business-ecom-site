@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { useAuth } from './AuthContext';
 
 const CartContext = createContext();
 
@@ -11,39 +13,56 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
+  const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('cartItems');
-      if (stored) {
-        const items = JSON.parse(stored);
-        setCartItems(items);
-        updateCartCount(items);
-      }
-    } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
-    }
-  }, []);
-
-  // Update cart count
+  // Helper
   const updateCartCount = (items) => {
     const count = items.reduce((total, item) => total + item.quantity, 0);
     setCartCount(count);
   };
 
-  // Save cart to localStorage
-  const saveCartToStorage = (items) => {
-    try {
+  // Load cart from localStorage or server on mount or user change
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (user) {
+        // If localStorage cart exists, sync to server then clear localStorage
+        const stored = localStorage.getItem('cartItems');
+        if (stored) {
+          const items = JSON.parse(stored);
+          await axios.post('http://localhost:8080/api/orders/cart', { items }, { withCredentials: true });
+          localStorage.removeItem('cartItems');
+        }
+        // Fetch cart from server
+        const res = await axios.get('http://localhost:8080/api/orders/cart', { withCredentials: true });
+        setCartItems(res.data.items || []);
+        updateCartCount(res.data.items || []);
+      } else {
+        // Not logged in, use localStorage
+        const stored = localStorage.getItem('cartItems');
+        if (stored) {
+          const items = JSON.parse(stored);
+          setCartItems(items);
+          updateCartCount(items);
+        } else {
+          setCartItems([]);
+          setCartCount(0);
+        }
+      }
+    };
+    fetchCart();
+  }, [user]);
+
+  // Save cart to localStorage or server
+  const saveCart = async (items) => {
+    if (user) {
+      await axios.put('http://localhost:8080/api/orders/cart', { items }, { withCredentials: true });
+    } else {
       localStorage.setItem('cartItems', JSON.stringify(items));
-      updateCartCount(items);
-      // Dispatch custom event for other components
-      window.dispatchEvent(new Event('cartUpdated'));
-    } catch (error) {
-      console.error('Error saving cart to localStorage:', error);
     }
+    updateCartCount(items);
+    window.dispatchEvent(new Event('cartUpdated'));
   };
 
   // Add item to cart
@@ -51,7 +70,6 @@ export const CartProvider = ({ children }) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id || item.name === product.name);
       let updatedItems;
-
       if (existingItem) {
         updatedItems = prevItems.map(item =>
           (item.id === product.id || item.name === product.name)
@@ -69,8 +87,7 @@ export const CartProvider = ({ children }) => {
         };
         updatedItems = [...prevItems, newItem];
       }
-
-      saveCartToStorage(updatedItems);
+      saveCart(updatedItems);
       return updatedItems;
     });
   };
@@ -81,12 +98,11 @@ export const CartProvider = ({ children }) => {
       removeFromCart(id);
       return;
     }
-
     setCartItems(prevItems => {
       const updatedItems = prevItems.map(item =>
         item.id === id ? { ...item, quantity: newQuantity } : item
       );
-      saveCartToStorage(updatedItems);
+      saveCart(updatedItems);
       return updatedItems;
     });
   };
@@ -95,16 +111,20 @@ export const CartProvider = ({ children }) => {
   const removeFromCart = (id) => {
     setCartItems(prevItems => {
       const updatedItems = prevItems.filter(item => item.id !== id);
-      saveCartToStorage(updatedItems);
+      saveCart(updatedItems);
       return updatedItems;
     });
   };
 
   // Clear entire cart
-  const clearCart = () => {
+  const clearCart = async () => {
     setCartItems([]);
-    localStorage.removeItem('cartItems');
     setCartCount(0);
+    if (user) {
+      await axios.delete('http://localhost:8080/api/orders/cart', { withCredentials: true });
+    } else {
+      localStorage.removeItem('cartItems');
+    }
     window.dispatchEvent(new Event('cartUpdated'));
   };
 
