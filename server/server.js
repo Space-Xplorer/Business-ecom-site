@@ -18,7 +18,7 @@ const Admin = require("./models/admin");
 const generateProductCode = require("./utils/generateProductCode");
 const { validateProduct, isAdmin } = require("./middlewares");
 const productsApiRoutes = require("./routes/products");
-const addressRoutes = require("./routes/address");
+// const addressRoutes = require("./routes/address");
 
 // Passport config
 require("./passport-config");
@@ -124,21 +124,6 @@ app.get("/products/:id", isAdmin, async (req, res, next) => {
   }
 });
 
-app.get("/admin/products/:id/edit", isAdmin, async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      req.flash("error", "Product not found.");
-      return res.redirect("/admin/products");
-    }
-    res.render("editProduct", { product });
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "Failed to fetch product.");
-    res.redirect("/admin/products");
-  }
-});
-
 // Admin dashboard stats
 app.get("/admin/stats", isAdmin, async (req, res) => {
   try {
@@ -184,7 +169,6 @@ app.use(carouselRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes)
 app.use(productsApiRoutes);
-app.use("/api/addresses", addressRoutes);
 
 // === Error Handling
 app.use((req, res, next) => {
