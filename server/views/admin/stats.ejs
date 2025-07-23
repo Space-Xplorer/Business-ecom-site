@@ -1,4 +1,4 @@
-<% layout("/layouts/boilerplate") -%>
+<!-- <% layout("/layouts/boilerplate") -%>
 <body class="bg-light">
   <div class="container py-5">
     <div class="mb-4">
@@ -7,7 +7,6 @@
     </div>
 
     <div class="row g-4 mb-5">
-      <!-- Total Orders -->
       <div class="col-sm-6 col-lg-3">
         <div class="card border-start border-primary shadow-sm">
           <div class="card-body d-flex align-items-center">
@@ -25,7 +24,6 @@
         </div>
       </div>
 
-      <!-- Delivered Orders -->
       <div class="col-sm-6 col-lg-3">
         <div class="card border-start border-success shadow-sm">
           <div class="card-body d-flex align-items-center">
@@ -43,7 +41,6 @@
         </div>
       </div>
 
-      <!-- Pending Orders -->
       <div class="col-sm-6 col-lg-3">
         <div class="card border-start border-warning shadow-sm">
           <div class="card-body d-flex align-items-center">
@@ -61,7 +58,6 @@
         </div>
       </div>
 
-      <!-- Cancelled Orders -->
       <div class="col-sm-6 col-lg-3">
         <div class="card border-start border-danger shadow-sm">
           <div class="card-body d-flex align-items-center">
@@ -80,7 +76,6 @@
       </div>
     </div>
 
-    <!-- Orders Table -->
     <div class="card shadow-sm">
       <div class="card-header bg-white fw-bold">Recent Orders</div>
       <div class="table-responsive">
@@ -105,7 +100,7 @@
                   <td>
                     <span class="badge bg-light text-dark"><%= order.orderStatus %></span>
                   </td>
-                  <td><%= order.placedAt.toDateString() %></td>
+                 <td><%= order.createdAt ? order.createdAt.toDateString() : "N/A" %></td>
                   <td>
                     <a href="/orders/<%= order._id %>" class="text-decoration-none">View</a>
                   </td>
@@ -122,6 +117,347 @@
       <div class="card-footer text-end">
         <a href="/orders" class="btn btn-link text-decoration-none">
           View all orders →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body> -->
+
+
+<% layout("/layouts/boilerplate") -%>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+  body {
+    background-color: #f5f7fa; /* A very light blue-grey for a modern dashboard feel */
+    font-family: 'Inter', sans-serif; /* Using a more modern font if available, otherwise fallback */
+  }
+
+  .container-fluid {
+    padding: 3rem; /* More padding for overall content */
+  }
+
+  .dashboard-header {
+    margin-bottom: 3.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .dashboard-header h1 {
+    font-weight: 700;
+    color: #344767; /* A deep blue-grey for main headings */
+    font-size: 2.5rem;
+  }
+
+  .dashboard-header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+  }
+
+  /* Metric Cards */
+  .metric-card {
+    border-radius: 0.75rem; /* Slightly more rounded corners */
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08); /* Stronger, softer shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none; /* Remove default border */
+  }
+
+  .metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  }
+
+  .metric-card .icon-wrapper {
+    min-width: 70px; /* Fixed width for icon background */
+    min-height: 70px; /* Fixed height for icon background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem; /* Slightly smaller border-radius for the inner icon box */
+    font-size: 1.8rem; /* Larger icon size */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Shadow for the icon box */
+  }
+
+  .metric-card .card-body {
+    padding: 1.5rem;
+  }
+
+  .metric-card .metric-label {
+    font-weight: 500;
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-card .metric-value {
+    font-weight: 700;
+    color: #344767;
+    font-size: 1.8rem; /* Larger metric values */
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-card .change-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+
+  .metric-card .change-text i {
+    margin-right: 0.3rem;
+  }
+
+  /* Specific colors for metric cards */
+  .metric-card.primary .icon-wrapper { background-color: #007bff; }
+  .metric-card.success .icon-wrapper { background-color: #28a745; }
+  .metric-card.warning .icon-wrapper { background-color: #ffc107; }
+  .metric-card.danger .icon-wrapper { background-color: #dc3545; }
+
+  /* Recent Orders Table */
+  .orders-table-card {
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    border: none;
+  }
+
+  .orders-table-card .card-header {
+    background-color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 0.75rem 0.75rem 0 0;
+    color: #344767;
+  }
+
+  .orders-table-card table thead th {
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .orders-table-card table tbody td {
+    padding: 1rem 1.5rem;
+    color: #495057;
+  }
+
+  .orders-table-card table tbody td .text-muted {
+    font-size: 0.9rem;
+  }
+
+  .orders-table-card table .badge {
+    padding: 0.5em 0.8em;
+    border-radius: 0.35rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: capitalize; /* Capitalize status like 'pending', 'delivered' */
+  }
+  .orders-table-card table .badge.status-pending { background-color: #ffe08a; color: #8e6200; } /* Custom yellow for pending */
+  .orders-table-card table .badge.status-delivered { background-color: #d4edda; color: #155724; } /* Custom green for delivered */
+  .orders-table-card table .badge.status-cancelled { background-color: #f8d7da; color: #721c24; } /* Custom red for cancelled */
+  /* Add more custom badges for other statuses */
+
+  .orders-table-card .card-footer {
+    background-color: #ffffff;
+    border-top: 1px solid #e0e0e0;
+    padding: 1rem 1.5rem;
+    text-align: right;
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+
+  .orders-table-card .card-footer .btn-link {
+    color: #007bff;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .orders-table-card .card-footer .btn-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<body class="bg-light">
+  <div class="container-fluid">
+    <div class="dashboard-header">
+      <h1 class="h3 fw-bold">Order Dashboard</h1>
+      <p class="text-muted">Overview of your sales performance and recent order activity.</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+      <div class="col-sm-6 col-lg-3">
+        <div class="card metric-card primary">
+          <div class="card-body d-flex align-items-center">
+            <div class="icon-wrapper bg-primary text-white me-4">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div>
+              <p class="metric-label">Total Orders</p>
+              <h5 class="metric-value">
+                <%= typeof totalOrders !== 'undefined' ? totalOrders : '245' %>
+                <% /* Example: Replace '245' with actual backend variable like: totalOrdersCount */ %>
+              </h5>
+              <small class="change-text text-success">
+                <i class="fas fa-arrow-up"></i>
+                <%= typeof totalOrdersChange !== 'undefined' ? totalOrdersChange : '8.2%' %> from last month
+                <% /* Example: Replace '8.2%' with actual backend variable like: totalOrdersPercentageChange */ %>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card metric-card success">
+          <div class="card-body d-flex align-items-center">
+            <div class="icon-wrapper bg-success text-white me-4">
+              <i class="fas fa-truck"></i>
+            </div>
+            <div>
+              <p class="metric-label">Delivered Orders</p>
+              <h5 class="metric-value">
+                <%= typeof deliveredOrders !== 'undefined' ? deliveredOrders : '182' %>
+                <% /* Example: Replace '182' with actual backend variable like: deliveredOrdersCount */ %>
+              </h5>
+              <small class="change-text text-success">
+                <i class="fas fa-arrow-up"></i>
+                <%= typeof deliveredOrdersChange !== 'undefined' ? deliveredOrdersChange : '12.5%' %> from last month
+                <% /* Example: Replace '12.5%' with actual backend variable like: deliveredOrdersPercentageChange */ %>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card metric-card warning">
+          <div class="card-body d-flex align-items-center">
+            <div class="icon-wrapper bg-warning text-white me-4">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div>
+              <p class="metric-label">Pending Orders</p>
+              <h5 class="metric-value">
+                <%= typeof pendingOrders !== 'undefined' ? pendingOrders : '42' %>
+                <% /* Example: Replace '42' with actual backend variable like: pendingOrdersCount */ %>
+              </h5>
+              <small class="change-text text-warning">
+                <i class="fas fa-minus"></i>
+                <%= typeof pendingOrdersChange !== 'undefined' ? pendingOrdersChange : '0.5%' %> from last month
+                <% /* Example: Replace '0.5%' with actual backend variable like: pendingOrdersPercentageChange */ %>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card metric-card danger">
+          <div class="card-body d-flex align-items-center">
+            <div class="icon-wrapper bg-danger text-white me-4">
+              <i class="fas fa-ban"></i>
+            </div>
+            <div>
+              <p class="metric-label">Cancelled Orders</p>
+              <h5 class="metric-value">
+                <%= typeof cancelledOrders !== 'undefined' ? cancelledOrders : '21' %>
+                <% /* Example: Replace '21' with actual backend variable like: cancelledOrdersCount */ %>
+              </h5>
+              <small class="change-text text-danger">
+                <i class="fas fa-arrow-down"></i>
+                <%= typeof cancelledOrdersChange !== 'undefined' ? cancelledOrdersChange : '3.2%' %> from last month
+                <% /* Example: Replace '3.2%' with actual backend variable like: cancelledOrdersPercentageChange */ %>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6 col-lg-3">
+        <div class="card metric-card info"> <% /* Add a new color if 'info' isn't defined in CSS */ %>
+          <div class="card-body d-flex align-items-center">
+            <div class="icon-wrapper bg-info text-white me-4">
+              <i class="fas fa-rupee-sign"></i> <% /* Font Awesome icon for Indian Rupee */ %>
+            </div>
+            <div>
+              <p class="metric-label">Total Sales</p>
+              <h5 class="metric-value">
+                ₹<%= typeof totalSales !== 'undefined' ? totalSales.toFixed(2) : '1,23,456.78' %>
+                <% /* Example: Replace with actual backend variable like: totalSalesAmount.toFixed(2) */ %>
+              </h5>
+              <small class="change-text text-success">
+                <i class="fas fa-arrow-up"></i>
+                <%= typeof totalSalesChange !== 'undefined' ? totalSalesChange : '10.1%' %> from last month
+                <% /* Example: Replace with actual backend variable like: totalSalesPercentageChange */ %>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ---
+
+    <div class="card orders-table-card">
+      <div class="card-header">Recent Orders</div>
+      <div class="table-responsive">
+        <table class="table mb-0 table-hover align-middle text-nowrap">
+          <thead class="table-light">
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Order Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (orders && orders.length > 0) { %>
+              <% orders.forEach(order => { %>
+                <tr>
+                  <td class="text-muted"><%= order._id.toString().substring(0, 8) %>...</td> <% /* Truncate for display */ %>
+                  <td><%= order.customerName %></td>
+                  <td>₹<%= order.totalAmount.toFixed(2) %></td>
+                  <td>
+                    <%
+                      let statusClass = '';
+                      if (order.orderStatus === 'pending') {
+                        statusClass = 'status-pending';
+                      } else if (order.orderStatus === 'delivered') {
+                        statusClass = 'status-delivered';
+                      } else if (order.orderStatus === 'cancelled') {
+                        statusClass = 'status-cancelled';
+                      }
+                      // Add more conditions for other statuses
+                    %>
+                    <span class="badge <%= statusClass %>"><%= order.orderStatus %></span>
+                  </td>
+                  <td><%= new Date(order.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) %></td> <% /* Format date */ %>
+                  <td>
+                    <a href="/orders/<%= order._id %>" class="btn btn-sm btn-outline-primary">View Details</a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  <i class="fas fa-box-open fa-2x mb-2 d-block"></i>
+                  No recent orders to display.
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer">
+        <a href="/orders" class="btn btn-link">
+          View all orders <i class="fas fa-arrow-right ms-2"></i>
         </a>
       </div>
     </div>
