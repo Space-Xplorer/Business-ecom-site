@@ -34,6 +34,7 @@ const orderRoutes= require("./routes/orders")
 // Connect DB
 const MONGO_URL = process.env.ECOMM_URL;
 mongoose.connect(MONGO_URL)
+  .then(() => console.log("MongoDB connected"))
   .catch(err => console.error(err));
 
 // CORS — placed early
@@ -115,7 +116,7 @@ app.get("/products/:id", isAdmin, async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     if (!product) {
       req.flash("error", "Product not found");
-      return res.redirect("/admin/products");
+      return res.redirect("./products/productspage");
     }
     res.render("products/productdetails.ejs", { product });
   } catch (err) {
@@ -196,4 +197,6 @@ app.use((err, req, res, next) => {
 });
 
 // === Start Server
-app.listen(port);
+app.listen(port, () => {
+  console.log(`Connected to ${port}`);
+});

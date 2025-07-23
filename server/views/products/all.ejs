@@ -29,7 +29,7 @@
           </p>
         </div>
         <div class="card-footer d-flex justify-content-between">
-          <a href="/products/<%= p._id %>/edit" class="btn btn-sm btn-outline-primary">Edit</a>
+          <a href="/products/<%= p._id %>" class="btn btn-sm btn-outline-primary">Edit</a>
           <form action="/products/<%= p._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?')">
             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
           </form>

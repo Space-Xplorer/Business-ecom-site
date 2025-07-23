@@ -69,7 +69,10 @@ router.post('/create', async (req, res) => {
       };
     }));
 
+    const orderId = `${userId}-${Date.now()}`;
+
     const newOrder = new Order({
+      orderId,
       userId,
       items: populatedItems,
       totalAmount,
