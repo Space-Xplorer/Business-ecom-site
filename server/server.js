@@ -27,7 +27,6 @@ const paymentRoutes = require("./routes/payment");
 const orderRoutes= require("./routes/orders")
 const productRoutes= require("./routes/adminProduct")
 const productsApiRoutes = require("./routes/products");
-const addressRoutes = require("./routes/address");
 const statsRoutes= require("./routes/adminStats")
 
 // Connect DB
@@ -96,7 +95,7 @@ app.use("/admin/stats", statsRoutes)
 app.use("/user", userRoutes);         // <-- Your React frontend will hit these
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes)
-app.use("/api/addresses", addressRoutes);
+
 app.use(productsApiRoutes);
 
 
