@@ -13,7 +13,7 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
 
@@ -25,19 +25,31 @@ export const CartProvider = ({ children }) => {
 
   // Load cart from localStorage or server on mount or user change
   useEffect(() => {
+    if (loading) return; // Wait until auth is loaded
     const fetchCart = async () => {
       if (user) {
         // If localStorage cart exists, sync to server then clear localStorage
         const stored = localStorage.getItem('cartItems');
         if (stored) {
           const items = JSON.parse(stored);
-          await axios.post('http://localhost:8080/api/orders/cart', { items }, { withCredentials: true });
+          try {
+            await axios.post('http://localhost:8080/api/orders/cart', { items }, { withCredentials: true });
+          } catch (e) {}
           localStorage.removeItem('cartItems');
         }
         // Fetch cart from server
-        const res = await axios.get('http://localhost:8080/api/orders/cart', { withCredentials: true });
-        setCartItems(res.data.items || []);
-        updateCartCount(res.data.items || []);
+        try {
+          const res = await axios.get('http://localhost:8080/api/orders/cart', { withCredentials: true });
+          setCartItems(res.data.items || []);
+          updateCartCount(res.data.items || []);
+        } catch (err) {
+          if (err.response && (err.response.status === 401 || err.response.status === 404)) {
+            setCartItems([]);
+            setCartCount(0);
+          } else {
+            console.error('Error fetching cart:', err);
+          }
+        }
       } else {
         // Not logged in, use localStorage
         const stored = localStorage.getItem('cartItems');
@@ -52,7 +64,7 @@ export const CartProvider = ({ children }) => {
       }
     };
     fetchCart();
-  }, [user]);
+  }, [user, loading]);
 
   // Save cart to localStorage or server
   const saveCart = async (items) => {

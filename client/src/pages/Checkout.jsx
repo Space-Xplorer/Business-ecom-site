@@ -145,58 +145,59 @@ const Checkout = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#FFF8E1] via-[#FFD700]/20 to-[#F26A1B]/10 py-12 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden">
+      <svg className="absolute top-0 left-0 w-full h-32 opacity-10 z-0" viewBox="0 0 1440 320"><path fill="#FFD700" fillOpacity="0.2" d="M0,160L60,170.7C120,181,240,203,360,197.3C480,192,600,160,720,133.3C840,107,960,85,1080,101.3C1200,117,1320,171,1380,197.3L1440,224L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path></svg>
       <div ref={topRef}></div>
       {showMessage && (
         <div className={`fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg transition-opacity duration-500 opacity-100 animate-fade-in-out ${messageType === 'success' ? 'bg-black text-[#FFD700]' : 'bg-red-600 text-white'}`}>
           {message}
         </div>
       )}
-      <div className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-8">Checkout</h2>
+      <div className="max-w-4xl mx-auto relative z-10">
+        <h2 className="text-3xl font-extrabold text-[#F26A1B] text-center mb-8 drop-shadow">Checkout</h2>
         <div className="bg-white shadow-lg rounded-lg md:grid md:grid-cols-2 md:gap-8 p-8">
           <div className="address-form">
-            <h3 className="text-xl font-semibold text-gray-800 mb-6">Shipping Address</h3>
+            <h3 className="text-xl font-semibold text-black mb-6">Shipping Address</h3>
             <div className="space-y-4 border-t pt-4">
               <input
                 type="text"
                 placeholder="Street"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-[#FFD700]/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26A1B]"
                 value={shippingAddress.street}
                 onChange={e => setShippingAddress({ ...shippingAddress, street: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="City"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-[#FFD700]/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26A1B]"
                 value={shippingAddress.city}
                 onChange={e => setShippingAddress({ ...shippingAddress, city: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="State"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-[#FFD700]/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26A1B]"
                 value={shippingAddress.state}
                 onChange={e => setShippingAddress({ ...shippingAddress, state: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="Postal Code"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border-2 border-[#FFD700]/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F26A1B]"
                 value={shippingAddress.postalCode}
                 onChange={e => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
               />
               <input
                 type="text"
                 placeholder="Country"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-50 cursor-not-allowed"
+                className="w-full px-4 py-3 border-2 border-[#FFD700]/40 rounded-lg bg-gray-50 cursor-not-allowed"
                 value={shippingAddress.country}
                 readOnly
               />
             </div>
           </div>
           <div className="order-summary mt-8 md:mt-0">
-            <h3 className="text-xl font-semibold text-gray-800 mb-6">Order Summary</h3>
+            <h3 className="text-xl font-semibold text-black mb-6">Order Summary</h3>
             <div className="space-y-4">
               {cartItems.map((item, index) => (
                 <div key={index} className="flex justify-between items-center text-gray-700">
@@ -215,7 +216,7 @@ const Checkout = () => {
                 <strong>Shipping:</strong>
                 <span>₹{shippingCost}</span>
               </div>
-              <div className="flex justify-between text-gray-900 font-bold text-lg mt-2">
+              <div className="flex justify-between text-black font-bold text-lg mt-2">
                 <strong>Total:</strong>
                 <span>₹{finalAmount}</span>
               </div>
@@ -244,7 +245,7 @@ const Checkout = () => {
               </div>
             </div>
             <button
-              className="w-full mt-8 bg-indigo-600 text-white font-semibold py-3 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full mt-8 bg-black text-[#FFD700] font-bold py-3 rounded-lg hover:bg-[#F26A1B] hover:text-white transition shadow-lg focus:scale-95 active:scale-90 disabled:bg-gray-400 disabled:cursor-not-allowed"
               onClick={handlePayment}
               disabled={loading}
             >
