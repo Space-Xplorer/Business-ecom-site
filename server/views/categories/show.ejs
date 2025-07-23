@@ -3,79 +3,308 @@
 <head>
   <title><%= mainCategoryName %> - Apparel Types</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f0f2f5; /* Light background for the page */
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 1000px; /* Max width for better readability on large screens */
+    }
+
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, #007bff 0%, #6a11cb 100%); /* Blue to purple gradient */
+      color: white;
+      padding: 3rem 0;
+      margin-bottom: 3rem;
+      border-radius: 0 0 20px 20px; /* Soft, rounded bottom corners */
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .page-header h2 {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      font-size: 2.8rem;
+    }
+
+    .page-header .lead {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    /* Back Button */
+    .back-btn {
+      background-color: #6c757d; /* Muted grey for consistency */
+      border-color: #6c757d;
+      color: white;
+      border-radius: 50px; /* Pill shape */
+      padding: 0.6rem 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .back-btn:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Apparel Type Cards */
+    .apparel-card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow for main cards */
+      overflow: hidden;
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .apparel-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+    .apparel-card .card-header {
+      background: linear-gradient(45deg, #e9ecef, #f8f9fa); /* Light gradient for header */
+      border-bottom: 1px solid #dee2e6;
+      padding: 1.2rem 1.5rem;
+      border-radius: 15px 15px 0 0; /* Match card radius */
+    }
+    .apparel-card .card-header h5 {
+      font-weight: 600;
+      color: #343a40;
+      font-size: 1.5rem;
+    }
+
+    /* Delete Buttons */
+    .btn-delete-custom {
+      background-color: #dc3545; /* Red */
+      border-color: #dc3545;
+      color: white;
+      border-radius: 8px; /* Slightly rounded */
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    .btn-delete-custom:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+      transform: scale(1.05);
+    }
+
+    /* Subcategory List */
+    .subcategory-list .list-group-item {
+      border: none; /* Remove individual item borders */
+      border-bottom: 1px solid #f0f0f0; /* Soft separator */
+      padding: 1rem 1.5rem;
+      background-color: transparent; /* Ensure list items are not shadowed */
+    }
+    .subcategory-list .list-group-item:last-child {
+      border-bottom: none;
+    }
+    .subcategory-list a {
+      font-weight: 500;
+      color: #f0f2f5; /* Primary blue for links */
+      font-size: 1.05rem;
+      transition: color 0.2s ease;
+    }
+    .subcategory-list a:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+
+    /* Subcategory Action Buttons */
+    .btn-add-product {
+      background-color: #28a745; /* Success green */
+      border-color: #28a745;
+      color: white;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+      transition: all 0.2s ease;
+    }
+    .btn-add-product:hover {
+      background-color: #218838;
+      border-color: #1e7e34;
+      transform: translateY(-1px);
+    }
+    .btn-delete-subcategory {
+      background-color: transparent; /* Transparent for outline look */
+      border: 1px solid #dc3545; /* Red border */
+      color: #dc3545; /* Red text */
+      border-radius: 8px;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+      transition: all 0.2s ease;
+    }
+    .btn-delete-subcategory:hover {
+      background-color: #dc3545;
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    /* Add Subcategory Form */
+    .add-subcategory-form {
+      padding: 1.5rem;
+      background-color: #fcfcfc;
+      border-top: 1px solid #eee;
+      border-radius: 0 0 15px 15px; /* Match card radius */
+    }
+    .add-subcategory-form .form-control {
+      border-radius: 8px;
+    }
+    .btn-add-subcategory {
+      background-color: #ffc107; /* Warning yellow */
+      border-color: #ffc107;
+      color: #343a40; /* Dark text for contrast */
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-add-subcategory:hover {
+      background-color: #e0a800;
+      border-color: #d39e00;
+      transform: translateY(-1px);
+    }
+
+    /* Add Apparel Type Section */
+    .add-apparel-card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      margin-top: 3rem; /* More space from previous section */
+    }
+    .add-apparel-card .card-header {
+      background: linear-gradient(45deg, #007bff, #0056b3); /* Darker blue gradient */
+      color: white;
+      font-weight: 600;
+      font-size: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      border-radius: 15px 15px 0 0;
+    }
+    .add-apparel-card .card-body {
+      padding: 1.5rem;
+    }
+    .btn-add-apparel {
+      background-color: #17a2b8; /* Info blue/teal */
+      border-color: #17a2b8;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-add-apparel:hover {
+      background-color: #138496;
+      border-color: #117a8b;
+      transform: translateY(-1px);
+    }
+
+    /* No items found messages */
+    .alert-info-custom {
+        background-color: #e0f2f7; /* Light blue */
+        color: #004085; /* Dark blue text */
+        border: 1px solid #b3e5fc;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+  </style>
 </head>
 <body>
 
+<div class="page-header">
+  <div class="container">
+    <h2><%= mainCategoryName %> Apparel Types</h2>
+    <p class="lead">Manage and organize apparel types and their subcategories within <%= mainCategoryName %>.</p>
+  </div>
+</div>
+
 <div class="container my-5">
-  <!-- Back Button -->
-  <a href="/categories/all" class="btn btn-outline-secondary mb-3">← Back to All Categories</a>
+  <div class="mb-4">
+    <a href="/categories/all" class="btn back-btn">
+      <i class="fas fa-arrow-left me-2"></i> Back to All Categories
+    </a>
+  </div>
 
-  <h2 class="mb-4"><%= mainCategoryName %> - Apparel Types</h2>
-
-  <!-- Apparel Types List -->
   <% if (apparelTypes.length > 0) { %>
-    <% apparelTypes.forEach(app => { %>
-      <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-          <h5 class="mb-0"><%= app.name %></h5>
-          <form action="/categories/apparel/<%= app._id %>?_method=DELETE" method="POST" class="d-inline">
-            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this apparel type and its subcategories?')">Delete</button>
-          </form>
-        </div>
-
-        <div class="card-body">
-          <!-- Subcategories -->
-          <% if (app.subcategories && app.subcategories.length > 0) { %>
-            <ul class="list-group mb-3">
-              <% app.subcategories.forEach(sub => { %>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <a href="/subcategory/<%= sub._id %>/products" class="text-decoration-none">
-                    <%= sub.name %>
-                  </a>
-                  <div>
-                    <a href="/subcategory/<%= sub._id %>/product/new" class="btn btn-sm btn-outline-success me-2">Add Product</a>
-                    <form action="/categories/subcategory/<%= sub._id %>?_method=DELETE" method="POST" class="d-inline">
-                      <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this subcategory?')">Delete</button>
-                    </form>
-                  </div>
-                </li>
-              <% }) %>
-            </ul>
-          <% } else { %>
-            <p class="text-muted">No subcategories yet.</p>
-          <% } %>
-
-          <!-- Add Subcategory -->
-          <form action="/categories/apparel/<%= app._id %>/subcategory" method="POST" class="row g-2">
-            <div class="col-md-8">
-              <input type="text" name="name" class="form-control" placeholder="New Subcategory Name" required />
+    <div class="row row-cols-1 g-4">
+      <% apparelTypes.forEach(app => { %>
+        <div class="col">
+          <div class="card apparel-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0"><%= app.name %></h5>
+              <form action="/categories/apparel/<%= app._id %>?_method=DELETE" method="POST" class="d-inline">
+                <button class="btn btn-delete-custom" onclick="return confirm('Are you sure you want to delete this apparel type? This will also delete all associated subcategories and products.')">
+                  <i class="fas fa-trash-alt me-1"></i> Delete Apparel Type
+                </button>
+              </form>
             </div>
-            <div class="col-md-4">
-              <button type="submit" class="btn btn-warning w-100">Add Subcategory</button>
+
+            <div class="card-body">
+              <% if (app.subcategories && app.subcategories.length > 0) { %>
+                <ul class="list-group mb-3 subcategory-list">
+                  <% app.subcategories.forEach(sub => { %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <a href="/subcategory/<%= sub._id %>/products" class="text-decoration-none" style="color: #0000FF;"><%= sub.name %> </a>
+                      <div>
+                        <a href="/subcategory/<%= sub._id %>/product/new" class="btn btn-sm btn-add-product me-2">
+                          <i class="fas fa-plus me-1"></i> Add Product
+                        </a>
+                        <form action="/categories/subcategory/<%= sub._id %>?_method=DELETE" method="POST" class="d-inline">
+                          <button class="btn btn-sm btn-delete-subcategory" onclick="return confirm('Are you sure you want to delete this subcategory? This will also delete all associated products.')">
+                            <i class="fas fa-trash-alt me-1"></i> Delete
+                          </button>
+                        </form>
+                      </div>
+                    </li>
+                  <% }) %>
+                </ul>
+              <% } else { %>
+                <p class="text-muted alert alert-info-custom">No subcategories have been added to <%= app.name %> yet.</p>
+              <% } %>
+
+              <form action="/categories/apparel/<%= app._id %>/subcategory" method="POST" class="row g-2 add-subcategory-form">
+                <div class="col-md-8">
+                  <input type="text" name="name" class="form-control" placeholder="Enter New Subcategory Name" required />
+                </div>
+                <div class="col-md-4">
+                  <button type="submit" class="btn btn-add-subcategory w-100">
+                    <i class="fas fa-plus-circle me-1"></i> Add Subcategory
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
-    <% }) %>
+      <% }) %>
+    </div>
   <% } else { %>
-    <p>No apparel types found in this category.</p>
+    <div class="alert alert-info-custom text-center mt-5" role="alert">
+      <h4 class="alert-heading">No Apparel Types Found!</h4>
+      <p>There are no apparel types listed under **<%= mainCategoryName %>** yet.</p>
+      <hr>
+      <p class="mb-0">Use the form below to add the first apparel type.</p>
+    </div>
   <% } %>
 
-  <!-- Add Apparel Type -->
-  <div class="card mt-5 shadow">
-    <div class="card-header bg-primary text-white">Add New Apparel Type</div>
+  <div class="card add-apparel-card">
+    <div class="card-header">Add New Apparel Type</div>
     <div class="card-body">
       <form action="/categories/<%= mainCategoryName.toLowerCase() %>/apparel" method="POST" class="row g-2">
         <div class="col-md-10">
-          <input type="text" name="name" class="form-control" placeholder="Apparel Type Name" required />
+          <input type="text" name="name" class="form-control" placeholder="Enter Apparel Type Name (e.g., T-Shirts, Dresses)" required />
         </div>
         <div class="col-md-2">
-          <button type="submit" class="btn btn-success w-100">Add</button>
+          <button type="submit" class="btn btn-add-apparel w-100">
+            <i class="fas fa-plus-circle me-1"></i> Add Apparel
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

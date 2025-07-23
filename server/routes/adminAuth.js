@@ -27,7 +27,6 @@ router.get("/signup",(req,res)=>{
   res.render("admin/signup.ejs");
 })
 
-
 router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -68,27 +67,11 @@ router.get("/admin/auth/google/callback",
   }
 );
 
-
-//------------------------------ROUTES-------------------------------------------------
-
 const CarouselSlide = require('../models/carouselSlide');
 //Dashboard
 router.get("/dashboard",isAdmin,  async (req, res) => {
   const slides = await CarouselSlide.find({});
   res.render("admin/adminHome.ejs", { user: req.user, slides });
-});
-
-
-//Products
-router.get("/products", isAdmin, async (req, res) => {
-  try {
-    const products = await Product.find({});
-    res.render("productspage", { products });
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "Failed to fetch products.");
-    res.redirect("/admin/dashboard");
-  }
 });
 
 

@@ -23,4 +23,7 @@ router.get('/api/products/:id', async (req, res) => {
   }
 });
 
+
+
+
 module.exports = router; 
