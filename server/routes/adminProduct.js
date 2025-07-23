@@ -16,7 +16,7 @@ router.get("/", isAdmin, async (req, res) => {
 
 
 router.get("/newproduct", isAdmin, (req, res) => {
-  res.render("new.ejs");
+  res.render("products/directnew.ejs");
 });
 
 router.post("/newproduct", isAdmin, validateProduct, async (req, res) => {
