@@ -51,7 +51,7 @@ const Checkout = () => {
       let itemsToOrder = [];
       if (user) {
         // Always fetch latest cart from server
-        const cartRes = await axios.get('http://localhost:8080/api/orders/cart', { withCredentials: true });
+        const cartRes = await axios.get('http://localhost:8080/api/cart', { withCredentials: true });
         itemsToOrder = (cartRes.data.items || []).map(item => ({
           productId: item.productId._id || item.productId,
           quantity: item.quantity
@@ -59,7 +59,7 @@ const Checkout = () => {
       } else {
         // fallback, should not happen
         itemsToOrder = cartItems.map(item => ({
-          productId: item.productId || item.id,
+          productId: item.productId._id,
           quantity: item.quantity
         }));
       }
@@ -199,10 +199,11 @@ const Checkout = () => {
           <div className="order-summary mt-8 md:mt-0">
             <h3 className="text-xl font-semibold text-black mb-6">Order Summary</h3>
             <div className="space-y-4">
-              {cartItems.map((item, index) => (
-                <div key={index} className="flex justify-between items-center text-gray-700">
-                  <p>{item.name} x {item.quantity}</p>
-                  <p>₹{item.price * item.quantity}</p>
+              {/* FIX: Use item.productId._id for the key and access item.productId.name/price for display */}
+              {cartItems.map((item) => (
+                <div key={item.productId._id} className="flex justify-between items-center text-gray-700">
+                  <p>{item.productId.name} x {item.quantity}</p>
+                  <p>₹{item.productId.price * item.quantity}</p>
                 </div>
               ))}
             </div>

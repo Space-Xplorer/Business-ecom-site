@@ -28,6 +28,7 @@ const orderRoutes= require("./routes/orders")
 const productRoutes= require("./routes/adminProduct")
 const productsApiRoutes = require("./routes/products");
 const statsRoutes= require("./routes/adminStats")
+const cartRoutes= require("./routes/cart")
 
 // Connect DB
 const MONGO_URL = process.env.ECOMM_URL;
@@ -95,6 +96,7 @@ app.use("/admin/stats", statsRoutes)
 app.use("/user", userRoutes);         // <-- Your React frontend will hit these
 app.use("/api/payment", paymentRoutes);
 app.use("/api/orders", orderRoutes)
+app.use("/api/cart", cartRoutes)
 
 app.use(productsApiRoutes);
 

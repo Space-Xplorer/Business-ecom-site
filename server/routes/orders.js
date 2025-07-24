@@ -13,90 +13,40 @@ const isAuthenticated = (req, res, next) => {
   next();
 };
 
-// Create new order
-// router.post("/create", isAuthenticated, async (req, res) => {
-//   try {
-//     const { items, shippingAddress, totalAmount, notes } = req.body;
-    
-//     if (!items || items.length === 0) {
-//       return res.status(400).json({ message: "Order must contain at least one item" });
-//     }
-
-//     if (!shippingAddress || !shippingAddress.street || !shippingAddress.city) {
-//       return res.status(400).json({ message: "Complete shipping address is required" });
-//     }
-
-//     const order = new Order({
-//       userId: req.user._id,
-//       items: items.map(item => ({
-//         productName: item.productName,
-//         quantity: item.quantity,
-//         price: item.price
-//       })),
-//       shippingAddress,
-//       totalAmount,
-//       notes,
-//       payment: {
-//         amount: totalAmount,
-//         status: 'pending'
-//       }
-//     });
-
-//     await order.save();
-    
-//     res.status(201).json({ 
-//       message: "Order created successfully", 
-//       orderId: order.orderId,
-//       order 
-//     });
-//   } catch (error) {
-//     console.error("Error creating order:", error);
-//     res.status(500).json({ message: "Failed to create order", error: error.message });
-//   }
-// });
+// In routes/orders.js
 
 router.post('/create', isAuthenticated, async (req, res) => {
   try {
-    const { items, totalAmount, shippingAddress, payment } = req.body;
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: 'Order must contain at least one item' });
-    }
-    if (!shippingAddress || !shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.postalCode) {
-      return res.status(400).json({ message: 'Complete shipping address is required' });
-    }
+    // ... other code
+    
     const populatedItems = await Promise.all(items.map(async (item) => {
       const product = await Product.findById(item.productId);
       if (!product) throw new Error('Product not found: ' + item.productId);
       return {
         productId: item.productId,
         productName: product.name,
-        productPrice: product.price,
+        price: product.price, // ✅ Corrected from productPrice to price
         quantity: item.quantity
       };
     }));
-    const userId = req.user._id;
-    const orderId = `${userId}-${Date.now()}`;
-    let paymentInfo = {
-      method: payment?.method || 'razorpay',
-      amount: totalAmount,
-      status: 'pending'
-    };
-    if (paymentInfo.method === 'cod') {
-      paymentInfo.status = 'pending';
-    }
+
+    // ... rest of the code
     const newOrder = new Order({
       orderId,
       userId,
-      items: populatedItems,
+      items: populatedItems, // Now this array has the correct field names
       totalAmount,
       shippingAddress,
       payment: paymentInfo
     });
+
     await newOrder.save();
     res.status(201).json({ message: 'Order placed successfully', order: newOrder });
   } catch (error) {
+    // The console.warn on line 56 from your error log will now be inside this catch block
     console.error('Error creating order:', error);
-    res.status(500).json({ message: 'Error creating order', error: error.message });
+    // Correctly send the error message back in the response
+    res.status(400).json({ message: 'Error creating order', error: error.message });
   }
 });
 
@@ -193,53 +143,5 @@ router.put("/:orderId/payment", async (req, res) => {
   }
 });
 
-// Cart API
-router.get('/cart', isAuthenticated, async (req, res) => {
-  try {
-    const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
-    res.json(cart || { userId: req.user._id, items: [] });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch cart' });
-  }
-});
-
-router.post('/cart', isAuthenticated, async (req, res) => {
-  try {
-    const { items } = req.body;
-    let cart = await Cart.findOne({ userId: req.user._id });
-    if (cart) {
-      cart.items = items;
-      await cart.save();
-    } else {
-      cart = new Cart({ userId: req.user._id, items });
-      await cart.save();
-    }
-    res.json(cart);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to save cart' });
-  }
-});
-
-router.put('/cart', isAuthenticated, async (req, res) => {
-  try {
-    const { items } = req.body;
-    let cart = await Cart.findOne({ userId: req.user._id });
-    if (!cart) cart = new Cart({ userId: req.user._id, items: [] });
-    cart.items = items;
-    await cart.save();
-    res.json(cart);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to update cart' });
-  }
-});
-
-router.delete('/cart', isAuthenticated, async (req, res) => {
-  try {
-    await Cart.findOneAndDelete({ userId: req.user._id });
-    res.json({ message: 'Cart cleared' });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to clear cart' });
-  }
-});
-
 module.exports = router;
+

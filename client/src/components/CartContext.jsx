@@ -33,13 +33,13 @@ export const CartProvider = ({ children }) => {
         if (stored) {
           const items = JSON.parse(stored);
           try {
-            await axios.post('http://localhost:8080/api/orders/cart', { items }, { withCredentials: true });
+            await axios.post('http://localhost:8080/api/cart', { items }, { withCredentials: true });
           } catch (e) {}
           localStorage.removeItem('cartItems');
         }
         // Fetch cart from server
         try {
-          const res = await axios.get('http://localhost:8080/api/orders/cart', { withCredentials: true });
+          const res = await axios.get('http://localhost:8080/api/cart', { withCredentials: true });
           setCartItems(res.data.items || []);
           updateCartCount(res.data.items || []);
         } catch (err) {
@@ -69,7 +69,7 @@ export const CartProvider = ({ children }) => {
   // Save cart to localStorage or server
   const saveCart = async (items) => {
     if (user) {
-      await axios.put('http://localhost:8080/api/orders/cart', { items }, { withCredentials: true });
+      await axios.put('http://localhost:8080/api/cart', { items }, { withCredentials: true });
     } else {
       localStorage.setItem('cartItems', JSON.stringify(items));
     }
@@ -133,7 +133,7 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
     setCartCount(0);
     if (user) {
-      await axios.delete('http://localhost:8080/api/orders/cart', { withCredentials: true });
+      await axios.delete('http://localhost:8080/api/cart', { withCredentials: true });
     } else {
       localStorage.removeItem('cartItems');
     }
@@ -141,10 +141,15 @@ export const CartProvider = ({ children }) => {
   };
 
   // Get total amount
-  const getTotalAmount = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
+ const getTotalAmount = () => {
+  return cartItems.reduce((total, item) => {
+    // Check if productId and price exist to prevent errors
+    if (item.productId && typeof item.productId.price === 'number') {
+      return total + item.productId.price * item.quantity;
+    }
+    return total;
+  }, 0);
+};
   // Get total items count
   const getTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
